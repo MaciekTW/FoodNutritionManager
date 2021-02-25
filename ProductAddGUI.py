@@ -30,7 +30,7 @@ class ProductAddGUI:
         self.leftWidgetMiddleFrame.resize(790, 800)
         self.leftWidgetMiddleFrame.move(60, 100)
         self.frameLogo = QtWidgets.QLabel(self.leftWidgetMiddleFrame)
-        self.frameLogo.setPixmap(QtGui.QPixmap('graphics/002-shop.png').scaled(386, 386, QtCore.Qt.KeepAspectRatio))
+        self.frameLogo.setPixmap(QtGui.QPixmap('graphics/002-shop.png').scaled(386, 386, QtCore.Qt.KeepAspectRatio,QtCore.Qt.SmoothTransformation))
         self.frameLogo.move(202, 207)
         self.frameTitle = QtWidgets.QLabel(self.leftWidgetMiddleFrame)
         self.frameTitle.setText("This is a place you can update")
@@ -96,15 +96,15 @@ class ProductAddGUI:
         #self.formFrame.setStyleSheet("background-color:green")
 
 
-        self.productNameInput=FormInputBox(15,0,630,80,"Product name",self.formFrame)
-        self.kcalInput=FormInputBox(15,120,300,80,"Kcal",self.formFrame)
-        self.carboInput = FormInputBox(345, 120, 300, 80, "Carbo", self.formFrame)
-        self.sugarInput=FormInputBox(15,240,300,80,"Sugar",self.formFrame)
-        self.proteinInput = FormInputBox(345, 240, 300, 80, "Protein", self.formFrame)
-        self.fatInput=FormInputBox(15,360,300,80,"Fat",self.formFrame)
-        self.weightInput = FormInputBox(345, 360, 300, 80, "Product weight", self.formFrame)
-        self.descInput=FormInputBox(15,480,440,80,"Description",self.formFrame)
-        self.priceInput = FormInputBox(485, 480, 160, 80, "Price", self.formFrame)
+        self.productNameInput=FormInputBox(15,0,630,80,"Product name",self.formFrame,False)
+        self.kcalInput=FormInputBox(15,120,300,80,"Kcal",self.formFrame,True)
+        self.carboInput = FormInputBox(345, 120, 300, 80, "Carbo", self.formFrame,True)
+        self.sugarInput=FormInputBox(15,240,300,80,"Sugar",self.formFrame,True)
+        self.proteinInput = FormInputBox(345, 240, 300, 80, "Protein", self.formFrame,True)
+        self.fatInput=FormInputBox(15,360,300,80,"Fat",self.formFrame,True)
+        self.weightInput = FormInputBox(345, 360, 300, 80, "Product weight", self.formFrame,True)
+        self.descInput=FormInputBox(15,480,440,80,"Description",self.formFrame,False)
+        self.priceInput = FormInputBox(485, 480, 160, 80, "Price", self.formFrame,True)
 
 
         self.submitButton=QtWidgets.QPushButton(self.formFrame)

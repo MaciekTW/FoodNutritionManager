@@ -1,10 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QLineEdit, QCompleter, QDesktopWidget
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QFont
-from InputFormsGUI import FormInputBox,FromLargeInputBox,FormComboBox
+from InputFormsGUI import FormInputBox,FromLargeInputBox,FormViewEmpty
 
 
-class MealAddGUI:
+class RecordAddGui:
     def __init__(self, workspace):
         self.robotoFontFamily = QtGui.QFontDatabase.applicationFontFamilies(
             QtGui.QFontDatabase.addApplicationFont("Fonts/Roboto-Regular.ttf"))
@@ -22,16 +22,16 @@ class MealAddGUI:
 
         self.leftWidget = QtWidgets.QFrame(self.mainScreen)
         self.leftWidget.resize(910, 1000)
-        self.leftWidget.setStyleSheet("background-color:#42afc2;")
+        self.leftWidget.setStyleSheet("background-color:#6e41ff;")
 
         self.leftWidgetMiddleFrame = QtWidgets.QFrame(self.leftWidget)
         self.leftWidgetMiddleFrame.resize(790, 800)
         self.leftWidgetMiddleFrame.move(60, 100)
         self.frameLogo = QtWidgets.QLabel(self.leftWidgetMiddleFrame)
-        self.frameLogo.setPixmap(QtGui.QPixmap('graphics/006-cooking.png').scaled(386, 386, QtCore.Qt.KeepAspectRatio,QtCore.Qt.SmoothTransformation))
+        self.frameLogo.setPixmap(QtGui.QPixmap('graphics/004-database-storage.png').scaled(386, 386, QtCore.Qt.KeepAspectRatio,QtCore.Qt.SmoothTransformation))
         self.frameLogo.move(202, 207)
         self.frameTitle = QtWidgets.QLabel(self.leftWidgetMiddleFrame)
-        self.frameTitle.setText("Cooking is your passion, isn't it?")
+        self.frameTitle.setText("Finally, time to eat something delicious!")
         self.frameTitle.setFont(QtGui.QFont(self.robotoFontFamily[0]))
         self.frameTitle.setMinimumWidth(790)
         self.frameTitle.setAlignment(QtCore.Qt.AlignHCenter)
@@ -39,7 +39,7 @@ class MealAddGUI:
         self.frameTitle.move(0, 65)
 
         self.frameTitle2 = QtWidgets.QLabel(self.leftWidgetMiddleFrame)
-        self.frameTitle2.setText("enter a new recipe!")
+        self.frameTitle2.setText("add a new meal!")
         self.frameTitle2.setFont(QtGui.QFont(self.robotoFontFamily[0]))
         self.frameTitle2.setMinimumWidth(790)
         self.frameTitle2.setAlignment(QtCore.Qt.AlignHCenter)
@@ -86,7 +86,7 @@ class MealAddGUI:
         self.titleLab.move(0,50)
         self.titleLab.setStyleSheet("font-size:24px;")
         self.titleLab.setFont(QtGui.QFont(self.robotoFontFamily[1][0]))
-        self.titleLab.setText("Use the form below to add new recipe")
+        self.titleLab.setText("Use the form below to add a new meal")
 
         self.formFrame=QtWidgets.QFrame(self.rightWidgetMiddleFrame)
         self.formFrame.resize(660,730)
@@ -96,12 +96,12 @@ class MealAddGUI:
 
         options=["Brekfakt","Dinner","Supper","Snack"," ij"]
 
-        self.mealNameInput=FormInputBox(15,0,630,80,"Meal name",self.formFrame,False)
+        self.mealNameInput=FormInputBox(15,0,500,80,"Meal name",self.formFrame,False)
 
-        self.ingredientInput=FormInputBox(15,240,430,80,"First Ingredient",self.formFrame,False)
-        self.weightInput = FormInputBox(475, 240, 170, 80, "Weight", self.formFrame,True)
-        self.descInput=FromLargeInputBox(15,360,630,200,"Description",self.formFrame)
-        self.typeInput = FormComboBox(15, 120, 630, 80, "Meal type", self.formFrame,options)
+        self.mealKcalView = FormViewEmpty(535, 0, 110, 80, "Kcal", self.formFrame)
+        self.mealKcalView.basic_icon_set("")
+
+        self.descInput=FromLargeInputBox(15,120,630,440,"Ingredients List",self.formFrame)
 
 
         self.submitButton=QtWidgets.QPushButton(self.formFrame)

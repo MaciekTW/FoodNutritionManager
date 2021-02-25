@@ -4,12 +4,15 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QLine
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QFont
 from ProductAddGUI import ProductAddGUI
 from MealAddGUI import MealAddGUI
+from RecordAddGUI import RecordAddGui
 from datetime import datetime
 from BasicElementGUI import BasicElement
+import random
 
-class MainGUI(object):
+class MainGUI(QWidget):
 
     def __init__(self, MainWindow):
+        super().__init__()
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1920, 1080)
         MainWindow.setMaximumHeight(1080)
@@ -192,9 +195,10 @@ class MainGUI(object):
 
         self.productAddGUI=ProductAddGUI(self.workingSpaceForOtherScreens)
         self.mealAddGUI = MealAddGUI(self.workingSpaceForOtherScreens)
+        self.recordAddGUI=RecordAddGui(self.workingSpaceForOtherScreens)
 
 
-        screenList=[self.productAddGUI,self.workingSpace, self.mealAddGUI]
+        screenList=[self.productAddGUI,self.workingSpace, self.mealAddGUI,self.recordAddGUI]
 
         self.firstWidget = QtWidgets.QFrame(self.workingSpace)
         self.firstWidgetBar = QtWidgets.QFrame(self.firstWidget)
@@ -211,7 +215,26 @@ class MainGUI(object):
         self.weekSummaryList=QtWidgets.QListWidget(self.firstWidget)
         self.weekSummaryList.resize(480,246)
         self.weekSummaryList.move(0,40)
-        self.weekSummaryList.setStyleSheet("border:none;")
+        self.weekSummaryList.setStyleSheet("QListWidget{"
+                                           "color:#fff;"
+                                           "border:none;"
+                                           "padding-top:5px;}"
+                                           "QListWidget:item{"
+                                           "padding:4px;}"
+                                           "QListWidget:item:hover{"
+                                           "background-color:#117182;}"
+                                           "QListWidget:item:selected{"
+                                           "background-color:#42afc2;}"
+                                           )
+        self.weekSummaryList.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.weekSummaryList.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        for i in range(7):
+            item = QtWidgets.QListWidgetItem("Day: 22.02.2021\tEaten: {} Kcal\tLeft: {} Kcal".format(random.randrange(1500,1800),random.randrange(100,300)), self.weekSummaryList)
+            item.setTextAlignment(QtCore.Qt.AlignHCenter)
+
+
+
         self.firstWidget.setGraphicsEffect(self.shadow_make())
         self.firstWidgetBar.setGraphicsEffect(self.shadow_make())
         self.firstWidgetLabel.setFont(momCakeFont)
@@ -522,8 +545,7 @@ class MainGUI(object):
         self.sixthWidgetBar.resize(835, 40)
         self.sixthWidgetBar.setStyleSheet(
             "background-color: qlineargradient(spread:pad, x1:0.948864, y1:0.716136, x2:1, y2:0, stop:0.164773 rgba(70,70,70,1), stop:0.988636 rgba(52,52,52,1));")
-        self.sixthWidget.setGraphicsEffect(self.shadow_make())
-        self.sixthWidgetBar.setGraphicsEffect(self.shadow_make())
+
 
         self.dayChoiceFrame = QtWidgets.QFrame(self.sixthWidgetBar)
         self.dayChoiceFrame.resize(400, 32)
@@ -552,6 +574,44 @@ class MainGUI(object):
         self.sixthWidgetLabel.setFont(momCakeFont)
         self.sixthWidgetLabel.setStyleSheet("color:#fff;font-size:32px;padding:7px;")
 
+        self.todayTable=QtWidgets.QTableWidget(8,7,self.sixthWidget)
+        self.todayTable.resize(835,246)
+        self.todayTable.move(0,40)
+        self.sixthWidget.setGraphicsEffect(self.shadow_make())
+        self.sixthWidgetBar.setGraphicsEffect(self.shadow_make())
+        self.sixthWidgetBar.show()
+        self.sixthWidgetBar.raise_()
+
+        self.todayTable.setStyleSheet("QTableWidget{border:none;"
+                                      "gridline-color:#117182;"
+                                      "color:#fff;"
+                                      "font-size:20px;}"
+                                      "QTableWidget::Item:selected{"
+                                      "background-color:#42afc2;}"
+                                      "QTableWidget::Item:hover{"
+                                      "background-color:rgba(17,113,130,50);}")
+        self.todayTable.setFont(fontRegular)
+        self.todayTable.verticalHeader().hide()
+        self.todayTable.horizontalHeader().hide()
+        self.todayTable.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.todayTable.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        self.todayTable.horizontalHeader().setDefaultSectionSize(94)
+        self.todayTable.verticalHeader().setDefaultSectionSize(42)
+        self.todayTable.setColumnWidth(0,275)
+        alignment = QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter
+
+
+        columnnNames=["Meal Name","Kcal","Carbo","Sugar","Protein","Fat","Price"]
+
+
+        for name in columnnNames:
+            item=QtWidgets.QTableWidgetItem(name)
+            item.setTextAlignment(alignment)
+            item.setBackground(QtGui.QColor(17, 113, 130,50))
+            self.todayTable.setItem(0,columnnNames.index(name),item)
+
+
         self.seventhWidget = QtWidgets.QFrame(self.workingSpace)
         self.seventhWidget.resize(835, 286)
         self.seventhWidget.setStyleSheet("background-color:#343434;")
@@ -566,6 +626,7 @@ class MainGUI(object):
 
         self.seventhWidgetLabel = QtWidgets.QLabel(self.seventhWidgetBar)
         self.seventhWidgetLabel.setText("BASIC STATISTICS")
+        self.seventhWidgetLabel.mousePressEvent=self.dosth
         self.seventhWidgetLabel.resize(600,40)
         self.seventhWidgetLabel.setFont(momCakeFont)
         self.seventhWidgetLabel.setStyleSheet("color:#fff;font-size:32px;padding:7px;")
@@ -697,7 +758,7 @@ class MainGUI(object):
         self.exitButton.clicked.connect(self.exit_button)
         self.mealAddButton.clicked.connect(lambda: self.meal_add_button(screenList))
         self.productRemoveButton.clicked.connect(self.product_remove_button)
-        self.recordAddButton.clicked.connect(self.record_add_button)
+        self.recordAddButton.clicked.connect(lambda: self.record_add_button(screenList))
         self.removeRecordButton.clicked.connect(self.record_remove_button)
         self.settingsButton.clicked.connect(self.settings_button)
 
@@ -734,11 +795,12 @@ class MainGUI(object):
         self.productAddGUI.show()
 
 
-    def record_add_button(self):
-        self.window_visible(self.mainScreenWidgets, False)
+    def record_add_button(self,screenList):
+        self.hide_all_screens(screenList)
         temp = self.recordAddButton.styleSheet()
         self.panel_marker_off()
         self.recordAddButton.setStyleSheet("%s QPushButton {border-right:8px solid #117182;}" % temp)
+        self.recordAddGUI.show()
 
     def record_remove_button(self):
         self.window_visible(self.mainScreenWidgets, False)
@@ -778,6 +840,8 @@ class MainGUI(object):
     def hide(self):
         self.workingSpace.setVisible(False)
 
+    def dosth(self, event):
+            print("test")
 
 if __name__ == "__main__":
     import sys
