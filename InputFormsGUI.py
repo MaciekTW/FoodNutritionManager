@@ -90,6 +90,14 @@ class FormInputBox(BasicElement):
         self.formCheckImage.setPixmap(QtGui.QPixmap("{}".format(ImageSrc)).scaled(48, 48, QtCore.Qt.KeepAspectRatio,
                                                                                   QtCore.Qt.SmoothTransformation))
 
+    def get_text(self):
+        return self.formLineEdit.text()
+
+    def set_enable(self,isEnable):
+        self.formLineEdit.setEnabled(isEnable)
+
+    def clear(self):
+        self.formLineEdit.clear()
 
 class FromLargeInputBox(FormInputBox):
     def __init__(self, xpos, ypos, width, height, text, where):
@@ -189,6 +197,28 @@ class FormViewEmpty(FormInputBox):
         self.formLineEdit.setMinimumWidth(self.width-30)
         self.formLineEdit.setText(self.formText)
         self.formLineEdit.setReadOnly(True)
+
+    def alpha_correct(self, inputWidget, image,numeric):
+        pass
+
+
+class FormCompleterInput(FormInputBox):
+    def __init__(self, xpos, ypos, width, height, text, where,predictionList):
+        super().__init__(xpos, ypos, width, height, text, where)
+        self.items=predictionList
+
+        FormInputBox.create_element(self)
+
+        self.create_element2()
+
+    def create_element2(self):
+        self.model = QStandardItemModel()
+        completer = QCompleter(self.model, self.formLineEdit)
+        completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+        self.formLineEdit.setCompleter(completer)
+
+        for i in self.items:
+            self.model.appendRow(QStandardItem(i))
 
     def alpha_correct(self, inputWidget, image,numeric):
         pass

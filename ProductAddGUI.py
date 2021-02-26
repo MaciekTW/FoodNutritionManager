@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QLineEdit, QCompleter, QDesktopWidget
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QFont
 from InputFormsGUI import FormInputBox
+from DatabaseImplementation import DBoperation
 
 
 class ProductAddGUI:
@@ -16,6 +17,8 @@ class ProductAddGUI:
             QtGui.QFontDatabase.addApplicationFont("Fonts/Roboto-BoldCondensed.ttf")))
 
         print(self.robotoFontFamily)
+
+        self.DB=DBoperation("test.py")
 
         self.workScreen = workspace
         self.mainScreen = QtWidgets.QFrame(self.workScreen)
@@ -133,6 +136,9 @@ class ProductAddGUI:
         self.clsButton.setText("Clear")
         self.clsButton.setGraphicsEffect(self.shadow_make())
 
+        self.clsButton.clicked.connect(self.clear)
+        self.submitButton.clicked.connect(self.product_add)
+
 
 
     def show(self):
@@ -148,3 +154,27 @@ class ProductAddGUI:
         shadowObj.setXOffset(xOff)
         shadowObj.setYOffset(yOff)
         return shadowObj
+
+    def product_add(self):
+        print(self.productNameInput.get_text())
+        self.DB.DB_product_insert(self.productNameInput.get_text(),
+                                  float(self.kcalInput.get_text()),
+                                  float(self.carboInput.get_text()),
+                                  float(self.sugarInput.get_text()),
+                                  float(self.proteinInput.get_text()),
+                                  float(self.fatInput.get_text()),
+                                  float(self.priceInput.get_text()),
+                                  float(self.weightInput.get_text()))
+
+        self.clear()
+
+    def clear(self):
+        self.productNameInput.clear()
+        self.carboInput.clear()
+        self.kcalInput.clear()
+        self.sugarInput.clear()
+        self.proteinInput.clear()
+        self.fatInput.clear()
+        self.priceInput.clear()
+        self.weightInput.clear()
+

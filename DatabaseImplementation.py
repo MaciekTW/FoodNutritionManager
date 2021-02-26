@@ -96,8 +96,9 @@ class DBoperation:
         self.db.commit()
 
     def DB_product_insert(self,productName, kcal, carbo , sugar , protein , fat , packagePrice , packageWeight ):
+        print(self.productCounter)
         self.c.execute(
-            "INSERT INTO Product VALUES(?,?,?,?,?,?,?,?)",
+            "INSERT INTO Product VALUES(?,?,?,?,?,?,?,?,?)",
             (self.Set_product_ID(), productName, kcal, carbo, sugar, protein, fat, packagePrice,packageWeight))
         self.db.commit()
 
@@ -290,13 +291,8 @@ class DBoperation:
         temp=self.c.fetchone()[0]
         return temp
 
-obj = DBoperation('test.db')
-
-print(obj.DB_day_nutrition('2021-02-09'))
-print(obj.DB_print_meals_from_day('2021-02-09'))
-print(obj.DB_meal_nutriton(1)['kcal'])
-for i in obj.DB_meal_nutriton(1):
-    print(i)
+db=DBoperation("test.py")
+db.DB_outside_query("SELECT * FROM Product")
 #obj.DB_outside_query("SELECT * FROM products")
 # obj.DB_outside_query("SELECT * FROM meal_type")
 #obj.DB_all_table_clear()

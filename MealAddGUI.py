@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QLineEdit, QCompleter, QDesktopWidget
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QFont
-from InputFormsGUI import FormInputBox,FromLargeInputBox,FormComboBox
+from InputFormsGUI import FormInputBox, FromLargeInputBox, FormComboBox, FormCompleterInput
 
 
 class MealAddGUI:
@@ -28,7 +28,8 @@ class MealAddGUI:
         self.leftWidgetMiddleFrame.resize(790, 800)
         self.leftWidgetMiddleFrame.move(60, 100)
         self.frameLogo = QtWidgets.QLabel(self.leftWidgetMiddleFrame)
-        self.frameLogo.setPixmap(QtGui.QPixmap('graphics/006-cooking.png').scaled(386, 386, QtCore.Qt.KeepAspectRatio,QtCore.Qt.SmoothTransformation))
+        self.frameLogo.setPixmap(QtGui.QPixmap('graphics/006-cooking.png').scaled(386, 386, QtCore.Qt.KeepAspectRatio,
+                                                                                  QtCore.Qt.SmoothTransformation))
         self.frameLogo.move(202, 207)
         self.frameTitle = QtWidgets.QLabel(self.leftWidgetMiddleFrame)
         self.frameTitle.setText("Cooking is your passion, isn't it?")
@@ -57,13 +58,11 @@ class MealAddGUI:
         self.firstHr.setStyleSheet("background-color:white;border:5px solid white;border-radius:2%")
         self.firstHr.setGraphicsEffect(self.shadow_make(40, 3, 3))
 
-
         self.secondHr = QtWidgets.QFrame(self.leftWidgetMiddleFrame)
         self.secondHr.move(225, 685)
         self.secondHr.resize(340, 2)
         self.secondHr.setStyleSheet("background-color:white;border:5px solid white;border-radius:2%")
         self.secondHr.setGraphicsEffect(self.shadow_make(40, 3, 3))
-
 
         self.thirdHr = QtWidgets.QFrame(self.leftWidgetMiddleFrame)
         self.thirdHr.move(265, 725)
@@ -71,42 +70,38 @@ class MealAddGUI:
         self.thirdHr.setStyleSheet("background-color:white;border:5px solid white;border-radius:2%")
         self.thirdHr.setGraphicsEffect(self.shadow_make(40, 3, 3))
 
-
         self.rightWidget = QtWidgets.QFrame(self.mainScreen)
         self.rightWidget.resize(910, 1000)
-        self.rightWidget.move(910,0)
+        self.rightWidget.move(910, 0)
         self.rightWidget.setStyleSheet("color:#fff;")
 
+        self.rightWidgetMiddleFrame = QtWidgets.QFrame(self.rightWidget)
+        self.rightWidgetMiddleFrame.resize(660, 880)
+        self.rightWidgetMiddleFrame.move(125, 60)
 
-        self.rightWidgetMiddleFrame=QtWidgets.QFrame(self.rightWidget)
-        self.rightWidgetMiddleFrame.resize(660,880)
-        self.rightWidgetMiddleFrame.move(125,60)
-
-        self.titleLab=QtWidgets.QLabel(self.rightWidgetMiddleFrame)
-        self.titleLab.move(0,50)
+        self.titleLab = QtWidgets.QLabel(self.rightWidgetMiddleFrame)
+        self.titleLab.move(0, 50)
         self.titleLab.setStyleSheet("font-size:24px;")
         self.titleLab.setFont(QtGui.QFont(self.robotoFontFamily[1][0]))
         self.titleLab.setText("Use the form below to add new recipe")
 
-        self.formFrame=QtWidgets.QFrame(self.rightWidgetMiddleFrame)
-        self.formFrame.resize(660,730)
-        self.formFrame.move(0,120)
-        #self.formFrame.setStyleSheet("background-color:green")
+        self.formFrame = QtWidgets.QFrame(self.rightWidgetMiddleFrame)
+        self.formFrame.resize(660, 730)
+        self.formFrame.move(0, 120)
+        # self.formFrame.setStyleSheet("background-color:green")
 
+        options = ["Brekfakt", "Dinner", "Supper", "Snack", " ij"]
 
-        options=["Brekfakt","Dinner","Supper","Snack"," ij"]
+        self.mealNameInput = FormInputBox(15, 0, 630, 80, "Meal name", self.formFrame, False)
 
-        self.mealNameInput=FormInputBox(15,0,630,80,"Meal name",self.formFrame,False)
+        self.ingredientInput = FormCompleterInput(15, 240, 430, 80, "First Ingredient", self.formFrame, options)
+        self.weightInput = FormInputBox(475, 240, 170, 80, "Weight", self.formFrame, True)
+        self.descInput = FromLargeInputBox(15, 360, 630, 200, "Description", self.formFrame)
+        self.typeInput = FormComboBox(15, 120, 630, 80, "Meal type", self.formFrame, options)
 
-        self.ingredientInput=FormInputBox(15,240,430,80,"First Ingredient",self.formFrame,False)
-        self.weightInput = FormInputBox(475, 240, 170, 80, "Weight", self.formFrame,True)
-        self.descInput=FromLargeInputBox(15,360,630,200,"Description",self.formFrame)
-        self.typeInput = FormComboBox(15, 120, 630, 80, "Meal type", self.formFrame,options)
-
-
-        self.submitButton=QtWidgets.QPushButton(self.formFrame)
-        self.submitButton.resize(260,80)
-        self.submitButton.move(60,620)
+        self.submitButton = QtWidgets.QPushButton(self.formFrame)
+        self.submitButton.resize(174, 80)
+        self.submitButton.move(60, 620)
         self.submitButton.setStyleSheet("QPushButton{"
                                         "background-color:#42afc2;"
                                         "color:#fff;"
@@ -117,20 +112,33 @@ class MealAddGUI:
         self.submitButton.setText("Submit")
         self.submitButton.setGraphicsEffect(self.shadow_make())
 
-        self.clsButton=QtWidgets.QPushButton(self.formFrame)
-        self.clsButton.resize(260,80)
-        self.clsButton.move(360,620)
+        self.clsButton = QtWidgets.QPushButton(self.formFrame)
+        self.clsButton.resize(174, 80)
+        self.clsButton.move(252, 620)
         self.clsButton.setStyleSheet("QPushButton{"
-                                        "background-color:#42afc2;"
-                                        "color:#fff;"
-                                        "font-size:30px;} "
-                                        "QPushButton:hover{"
-                                        "background-color:#f61fff;}")
+                                     "background-color:#42afc2;"
+                                     "color:#fff;"
+                                     "font-size:30px;} "
+                                     "QPushButton:hover{"
+                                     "background-color:#f61fff;}")
         self.clsButton.setFont(QtGui.QFont(self.robotoFontFamily[2][0]))
         self.clsButton.setText("Clear")
         self.clsButton.setGraphicsEffect(self.shadow_make())
 
-
+        self.addButton = QtWidgets.QPushButton(self.formFrame)
+        self.addButton.resize(174, 80)
+        self.addButton.move(448, 620)
+        self.addButton.setStyleSheet("QPushButton{"
+                                     "background-color:#42afc2;"
+                                     "color:#fff;"
+                                     "font-size:30px;} "
+                                     "QPushButton:hover{"
+                                     "background-color:#f61fff;}")
+        self.addButton.setFont(QtGui.QFont(self.robotoFontFamily[2][0]))
+        self.addButton.setText("Next")
+        self.addButton.setGraphicsEffect(self.shadow_make())
+        ingredients=[]
+        self.addButton.clicked.connect(lambda: self.next_ingredient(ingredients))
 
     def show(self):
         self.mainScreen.setVisible(True)
@@ -145,3 +153,12 @@ class MealAddGUI:
         shadowObj.setXOffset(xOff)
         shadowObj.setYOffset(yOff)
         return shadowObj
+
+    def next_ingredient(self,list):
+        list.append({'name':self.ingredientInput.get_text(),'weight':int(self.weightInput.get_text())})
+        self.mealNameInput.set_enable(False)
+        self.typeInput.set_enable(False)
+        self.ingredientInput.clear()
+        self.weightInput.clear()
+        print(list)
+
