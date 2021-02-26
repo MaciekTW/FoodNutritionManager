@@ -26,8 +26,8 @@ class MainGUI(QWidget):
         fontWithSpacing.setLetterSpacing(QtGui.QFont.AbsoluteSpacing,2)
         fontRegularWithSpacing=QtGui.QFont(self.helpItem.get_roboto_regular_font())
         fontRegularWithSpacing.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, 7)
-        momCakeFont=QtGui.QFont(QtGui.QFontDatabase.applicationFontFamilies(
-            QtGui.QFontDatabase.addApplicationFont("Fonts/MomcakeThin-9Y6aZ.otf"))[0])
+        FontItalic=QtGui.QFont(QtGui.QFontDatabase.applicationFontFamilies(
+            QtGui.QFontDatabase.addApplicationFont("Fonts/Roboto-Light.ttf"))[0])
         momCakeFontBold=QtGui.QFont(QtGui.QFontDatabase.applicationFontFamilies(
             QtGui.QFontDatabase.addApplicationFont("Fonts/LandasansMedium-ALJ6m.otf"))[0])
         fontRegular=QtGui.QFont(self.helpItem.get_roboto_regular_font())
@@ -48,10 +48,9 @@ class MainGUI(QWidget):
         self.upperPanel = QtWidgets.QFrame(self.bgFrame)
         self.upperPanelMainText = QtWidgets.QLabel(self.upperPanel)
         self.upperPanelMainText.setText("Food Nutrition Manager")
-        QtGui.QFontDatabase.applicationFontFamilies(
-            QtGui.QFontDatabase.addApplicationFont("Fonts/LandasansUltraLight - qZ080.otf"))
 
-        self.upperPanelMainText.setFont(momCakeFont)
+
+        self.upperPanelMainText.setFont(FontItalic)
 
         self.upperPanelMainText.setStyleSheet("color:#fff;font-size:50px;border:none;font-weight:700")
         self.upperPanelMainText.move(20, 10)
@@ -218,7 +217,8 @@ class MainGUI(QWidget):
         self.weekSummaryList.setStyleSheet("QListWidget{"
                                            "color:#fff;"
                                            "border:none;"
-                                           "padding-top:5px;}"
+                                           "padding-top:0px;"
+                                           "font-size:18px;}"
                                            "QListWidget:item{"
                                            "padding:4px;}"
                                            "QListWidget:item:hover{"
@@ -228,16 +228,18 @@ class MainGUI(QWidget):
                                            )
         self.weekSummaryList.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.weekSummaryList.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.weekSummaryList.wheelEvent=self.scroll_lock
 
         for i in range(7):
             item = QtWidgets.QListWidgetItem("Day: 22.02.2021\tEaten: {} Kcal\tLeft: {} Kcal".format(random.randrange(1500,1800),random.randrange(100,300)), self.weekSummaryList)
             item.setTextAlignment(QtCore.Qt.AlignHCenter)
+            item.setSizeHint(QtCore.QSize(480, 35))
 
 
 
         self.firstWidget.setGraphicsEffect(self.shadow_make())
         self.firstWidgetBar.setGraphicsEffect(self.shadow_make())
-        self.firstWidgetLabel.setFont(momCakeFont)
+        self.firstWidgetLabel.setFont(FontItalic)
         self.firstWidgetLabel.resize(480,40)
         self.firstWidgetBar.show()
         self.firstWidgetBar.raise_()
@@ -255,7 +257,7 @@ class MainGUI(QWidget):
 
         self.secondWidgetLabel.setText("AVERAGE KILOCALORIES INTAKE")
         self.secondWidgetLabel.setStyleSheet("color:#fff;font-size:32px;padding:7px;")
-        self.secondWidgetLabel.setFont(momCakeFont)
+        self.secondWidgetLabel.setFont(FontItalic)
         self.secondWidgetLabel.resize(600,40)
         self.secondWidget.setGraphicsEffect(self.shadow_make())
         self.secondWidgetBar.setGraphicsEffect(self.shadow_make())
@@ -367,10 +369,10 @@ class MainGUI(QWidget):
         self.thirdWidgetBar.setStyleSheet(
             "background-color: qlineargradient(spread:pad, x1:0.948864, y1:0.716136, x2:1, y2:0, stop:0.164773 rgba(70,70,70,1), stop:0.988636 rgba(52,52,52,1));")
         self.thirdWidgetLabel = QtWidgets.QLabel(self.thirdWidgetBar)
-        self.thirdWidgetLabel.setFont(momCakeFont)
+        self.thirdWidgetLabel.setFont(FontItalic)
         self.thirdWidgetLabel.resize(480,40)
-        self.thirdWidgetLabel.setFont(momCakeFont)
-        self.thirdWidgetLabel.setText("Third Widget")
+        self.thirdWidgetLabel.setFont(FontItalic)
+        self.thirdWidgetLabel.setText("WEIGHT CHART")
         self.thirdWidgetLabel.setStyleSheet("color:#fff;font-size:32px;padding:7px;")
         self.thirdWidget.setGraphicsEffect(self.shadow_make())
         self.thirdWidgetBar.setGraphicsEffect(self.shadow_make())
@@ -384,12 +386,51 @@ class MainGUI(QWidget):
         self.fourthWidgetBar.setStyleSheet(
             "background-color: qlineargradient(spread:pad, x1:0.948864, y1:0.716136, x2:1, y2:0, stop:0.164773 rgba(70,70,70,1), stop:0.988636 rgba(52,52,52,1));")
         self.fourthWidgetLabel = QtWidgets.QLabel(self.fourthWidgetBar)
-        self.fourthWidgetLabel.setText("Third Widget")
+        self.fourthWidgetLabel.setText("UPDATES")
         self.fourthWidgetLabel.resize(600,40)
-        self.fourthWidgetLabel.setFont(momCakeFont)
+        self.fourthWidgetLabel.setFont(FontItalic)
         self.fourthWidgetLabel.setStyleSheet("color:#fff;font-size:32px;padding:7px;")
+
+
+        self.tabWidget=QtWidgets.QTabWidget(self.fourthWidget)
+        self.tabWidget.resize(600,246)
+        self.tabWidget.move(0,40)
+
+        self.weightGoalTab=QtWidgets.QFrame()
+        self.weightCurrentTab = QtWidgets.QFrame()
+        self.caloriesGoalTab = QtWidgets.QFrame()
+
+
+        self.weightGoalTab.setStyleSheet("background-color:rgba(66,175,194,0.1);")
+        self.weightCurrentTab.setStyleSheet("background-color:rgba(66,175,194,0.1);")
+        self.caloriesGoalTab.setStyleSheet("background-color:rgba(66,175,194,0.1);")
+
+
+        self.tabWidget.addTab(self.weightGoalTab,"Weight goal")
+        self.tabWidget.addTab(self.caloriesGoalTab, "Kilocalories goal")
+        self.tabWidget.addTab(self.weightCurrentTab, "Current weight")
+
+        self.tabWidget.setStyleSheet("QTabBar::tab {"
+                                     "padding:20px;"
+                                     "color:#fff;"
+                                     "font-size:16px;"
+                                     "border-right:1px solid #fff;"
+                                     "background-color:#117182;}"
+                                     "QTabWidget{"
+                                     "background-color:red;"
+                                     "border:none;"
+                                     "color:#fff;}"
+                                     "QTabBar::tab:selected {"
+                                     "background-color:rgba(66,175,194,0.1);"
+                                     "font-weight:700;"
+                                     "font-size:18px;}"
+                                     "QTabWidget::pane {"
+                                     "border:none;}")
+        self.tabWidget.setFont(fontRegular)
         self.fourthWidget.setGraphicsEffect(self.shadow_make())
         self.fourthWidgetBar.setGraphicsEffect(self.shadow_make())
+        self.fourthWidgetBar.show()
+        self.fourthWidgetBar.raise_()
 
         self.fifthWidget = QtWidgets.QFrame(self.workingSpace)
         self.fifthWidget.resize(540, 602)
@@ -410,7 +451,7 @@ class MainGUI(QWidget):
 
         self.recipeLabel = QtWidgets.QLabel(self.recipeSearchFrame)
         self.recipeLabel.setText("Search: ")
-        self.recipeLabel.setFont(momCakeFont)
+        self.recipeLabel.setFont(FontItalic)
         self.recipeLabel.setMinimumHeight(40)
         self.recipeLabel.setStyleSheet("color:#fff;font-size:28px;")
 
@@ -425,7 +466,7 @@ class MainGUI(QWidget):
         self.fifthWidgetLabel = QtWidgets.QLabel(self.fifthWidgetBar)
         self.fifthWidgetLabel.setText("RECIPES")
         self.fifthWidgetLabel.resize(200,40)
-        self.fifthWidgetLabel.setFont(momCakeFont)
+        self.fifthWidgetLabel.setFont(FontItalic)
         self.fifthWidgetLabel.setStyleSheet("color:#fff;font-size:32px;padding:7px;")
 
         self.recipeSpace = QtWidgets.QFrame(self.fifthWidget)
@@ -571,7 +612,7 @@ class MainGUI(QWidget):
         self.sixthWidgetLabel = QtWidgets.QLabel(self.sixthWidgetBar)
         self.sixthWidgetLabel.setText("DAY SUMMARY")
         self.sixthWidgetLabel.resize(300,40)
-        self.sixthWidgetLabel.setFont(momCakeFont)
+        self.sixthWidgetLabel.setFont(FontItalic)
         self.sixthWidgetLabel.setStyleSheet("color:#fff;font-size:32px;padding:7px;")
 
         self.todayTable=QtWidgets.QTableWidget(8,7,self.sixthWidget)
@@ -626,9 +667,8 @@ class MainGUI(QWidget):
 
         self.seventhWidgetLabel = QtWidgets.QLabel(self.seventhWidgetBar)
         self.seventhWidgetLabel.setText("BASIC STATISTICS")
-        self.seventhWidgetLabel.mousePressEvent=self.dosth
         self.seventhWidgetLabel.resize(600,40)
-        self.seventhWidgetLabel.setFont(momCakeFont)
+        self.seventhWidgetLabel.setFont(FontItalic)
         self.seventhWidgetLabel.setStyleSheet("color:#fff;font-size:32px;padding:7px;")
         self.firstProgressBar = QtWidgets.QFrame(self.seventhWidget)
         self.firstProgressBar.resize(236, 236)
@@ -840,8 +880,8 @@ class MainGUI(QWidget):
     def hide(self):
         self.workingSpace.setVisible(False)
 
-    def dosth(self, event):
-            print("test")
+    def scroll_lock(self, event):
+            pass
 
 if __name__ == "__main__":
     import sys
