@@ -3,9 +3,10 @@ import sqlite3
 
 class DBoperation:
     def __init__(self, DBname):
-        self.db = sqlite3.connect('test.db')
+        self.db = sqlite3.connect('testy.db')
         self.c = self.db.cursor()
         self.DB_create()
+
 
         self.c.execute("SELECT mealID FROM Meal ORDER BY mealID DESC")
         mealCounter = self.c.fetchone()
@@ -21,7 +22,7 @@ class DBoperation:
         weightCounter = self.c.fetchone()
         self.c.execute("SELECT recordID FROM Record ORDER BY recordID DESC")
         recordCounter = self.c.fetchone()
-
+        self.db.commit()
 
         if mealCounter is None:
             self.mealCounter = 0
@@ -58,7 +59,8 @@ class DBoperation:
         else:
             self.recordCounter = recordCounter[0]
 
-
+    def __del__(self):
+        self.db.close()
 
 
 
@@ -80,6 +82,7 @@ class DBoperation:
 
     def DB_outside_query(self, sql):
         self.c.execute("{}".format(sql))
+        self.db.commit()
         if sql.startswith("SELECT"):
             print(self.c.fetchall())
 
@@ -87,20 +90,34 @@ class DBoperation:
         self.c.execute("INSERT INTO Product_Meal VALUES(?,?)", (mealID, productID))
         self.db.commit()
 
-    def Set_meal_ID(self):
-        self.mealCounter += 1
-        return self.mealCounter
-
     def DB_meal_insert(self, name, typeID,Recipe):
-        self.c.execute("INSERT INTO Meal VALUES(?,?,?)", (self.Set_meal_ID(), name, typeID, Recipe))
+        self.c.execute("INSERT INTO Meal VALUES(?,?,?,?)", (self.Set_meal_ID(), name, typeID, Recipe))
         self.db.commit()
 
     def DB_product_insert(self,productName, kcal, carbo , sugar , protein , fat , packagePrice , packageWeight ):
-        print(self.productCounter)
         self.c.execute(
             "INSERT INTO Product VALUES(?,?,?,?,?,?,?,?,?)",
             (self.Set_product_ID(), productName, kcal, carbo, sugar, protein, fat, packagePrice,packageWeight))
         self.db.commit()
+
+    def DB_type_insert(self, name):
+        self.c.execute(
+            "INSERT INTO Type VALUES(?,?)",
+            (self.Set_type_ID(), name))
+        self.db.commit()
+
+
+    def DB_product_meal_insert(self, mealID,productID):
+       self.c.execute("INSERT INTO Product_Meal VALUES(?,?)", (mealID,productID))
+       self.db.commit()
+
+    def DB_record_insert(self, mealID,productID,productWeight):
+       self.c.execute("INSERT INTO Record VALUES(?,?,?,?)", (self.recordCounter,mealID,productID,productWeight))
+       self.db.commit()
+
+    def DB_daily_record_insert(self, recordID,UserID):
+       self.c.execute("INSERT INTO Record VALUES(?,?,?,?)", (self.Set_daily_ID(),recordID,UserID,self.today()))
+       self.db.commit()
 
     def Set_product_ID(self):
         self.productCounter += 1
@@ -110,189 +127,236 @@ class DBoperation:
         self.userCounter += 1
         return self.userCounter
 
+    def Set_meal_ID(self):
+        self.mealCounter += 1
+        return self.mealCounter
 
     def Set_weight_ID(self):
         self.weightCounter += 1
         return self.weightCounter
 
-
     def Set_record_ID(self):
         self.recordCounter += 1
         return self.recordCounter
-
-    def DB_get_product_name(self,productID):
-        self.c.execute("SELECT productName FROM Product WHERE productId=?",(productID,))
-        return self.c.fetchone()[0]
-
-    def DB_get_product_weight(self,productID):
-        self.c.execute("SELECT weigth FROM meal_product WHERE productId=?",(productID,))
-        return self.c.fetchone()[0]
-
-    def DB_get_meal_name(self,mealID):
-        self.c.execute("SELECT name FROM meal WHERE mealID=?",(mealID,))
-        return self.c.fetchone()[0]
-
-    def DB_type_insert(self, name):
-        self.c.execute(
-            "INSERT INTO meal_type VALUES(?,?)",
-            (self.Set_type_ID(), name))
-        self.db.commit()
 
     def Set_type_ID(self):
         self.typeCounter += 1
         return self.typeCounter
 
-    def DB_print_product(self, n="all"):
-        self.c.execute("SELECT * FROM products")
-        if n == "all":
-            return self.c.fetchall()
-        else:
-            return self.c.fetchmany(n)
+    def Set_daily_ID(self):
+        self.dailyCounter += 1
+        return self.dailyCounter
 
-    def DB_print_meals_from_day(self,day):
-        self.c.execute("SELECT mealID FROM food_record WHERE date=?",(day,))
-        return self.c.fetchall()
-
-    def DB_print_meal(self, n="all"):
-        self.c.execute("SELECT * FROM meal")
-        if n == "all":
-            return self.c.fetchall()
-        else:
-            return self.c.fetchmany(n)
-
-    def DB_print_meal_products(self, mealID):
-        self.c.execute("SELECT productID FROM meal_product WHERE mealID=?",(mealID,))
-        if mealID == -1:
-            return -1
-        else:
-            return self.c.fetchall()
-
-    def DB_print_type(self, n="all"):
-        self.c.execute("SELECT * FROM meal_type")
-        if n == "all":
-            return self.c.fetchall()
-        else:
-            return self.c.fetchmany(n)
-
-    def DB_all_table_clear(self):
-        self.c.execute("DELETE FROM products")
-        self.c.execute("DELETE FROM meal")
-        self.c.execute("DELETE FROM meal_type")
-        self.c.execute("DELETE FROM food_record")
-        self.c.execute("DELETE FROM meal_product")
-        self.typeCounter = 0
-        self.mealCounter = 0
-        self.productCounter = 0
-        self.recordID = 0
+    def DB_get_product_name(self,productID):
+        self.c.execute("SELECT productName FROM Product WHERE productId=?",(productID,))
         self.db.commit()
+        return self.c.fetchone()[0]
 
-    def DB_product_nutrition(self, id, meal):
-        self.c.execute(
-            """SELECT ROUND(products.kcal*(CAST(meal_product.weigth AS REAL)/100),2), 
-                ROUND(products.carbo*(CAST(meal_product.weigth AS REAL)/100),2),
-                ROUND(products.sugar*(CAST(meal_product.weigth AS REAL)/100),2),
-                ROUND(products.protein*(CAST(meal_product.weigth AS REAL)/100),2),
-                ROUND(products.fat*(CAST(meal_product.weigth AS REAL)/100),2) 
-                FROM products LEFT JOIN meal_product ON products.productID=meal_product.productID 
-                WHERE products.productID=? AND meal_product.mealID=?""", (id, meal))
-
-        temp = self.c.fetchone()
-        nutrition = {'kcal': temp[0], 'carbo': temp[1], 'sugar': temp[2], 'protein': temp[3], 'fat': temp[4]}
-        return nutrition
-
-    def DB_meal_nutriton(self, meal):
-        self.c.execute("SELECT productID FROM meal_product WHERE mealID=?", (meal,))
-        t = {'kcal': 0, 'carbo': 0, 'sugar': 0, 'protein': 0, 'fat': 0}
-        for i in self.c.fetchall():
-            for key in t:
-                t[key] += self.DB_product_nutrition(i[0], meal)[key]
-
-        return t
-
-    def DB_meal_price(self, meal):
-        self.c.execute(
-            "SELECT ROUND(price*weigth/100,2) FROM products LEFT JOIN meal_product ON products.productID=meal_product.productID WHERE mealID=?",
-            (meal,))
-        price = 0
-        for i in self.c.fetchall():
-            price += i[0]
-
-        return price
-
-    def DB_add_meal(self, meal):
-        self.c.execute("INSERT INTO food_record VALUES(?,?,DATE('NOW'))", (self.Set_record_ID(), meal))
+    def DB_get_product_weight(self,productID,recordID):
+        self.c.execute("SELECT productWeight FROM Record WHERE productId=? AND recordID-?",(productID,recordID))
         self.db.commit()
+        return self.c.fetchone()[0]
 
-    def Set_record_ID(self):
-        self.recordID += 1
-        return self.recordID
+    def DB_get_meal_name(self,mealID):
+        self.c.execute("SELECT mealName FROM Meal WHERE mealID=?",(mealID,))
+        self.db.commit()
+        return self.c.fetchone()[0]
 
     def today(self):
         self.c.execute("SELECT DATE('NOW')")
+        self.db.commit()
         return self.c.fetchone()[0]
 
-    def DB_day_nutrition(self, day):
-        self.c.execute("SELECT mealID FROM food_record WHERE date=?", (day,))
-        t = {'kcal': 0, 'carbo': 0, 'sugar': 0, 'protein': 0, 'fat': 0}
-        for i in self.c.fetchall():
-            for key in t:
-                t[key] += self.DB_meal_nutriton(i[0])[key]
-
-        return t
-
-
-
-    def DB_meal_weight_update(self,meal,product,weight):
-        self.c.execute("UPDATE meal_product SET weigth=? WHERE mealID=? AND productID=?",(weight,meal,product))
-        self.db.commit()
-
-    def DB_meal_product_delete(self,meal,product):
-        self.c.execute("DELETE FROM meal_product WHERE mealID=? AND productID=?",(meal,product))
-        self.db.commit()
-
-    def DB_meal_delete(self,meal):
-        self.c.execute("DELETE FROM meal_product WHERE mealID=?",(meal,))
-        self.c.execute("DELETE FROM meal WHERE mealID=?",(meal,))
-        self.mealCounter-=1
-        self.db.commit()
-
-    def mealCheck(self,id):
-        self.c.execute("SELECT * FROM meal WHERE mealID=?",(id,))
-        if self.c.fetchone() is None:
-            return False
-        else:
-            return True
-
-    def typeCheck(self,id):
-        self.c.execute("SELECT * FROM meal_type WHERE typeID=?",(id,))
-        if self.c.fetchone() is None:
-            return False
-        else:
-            return True
-
-    def mealFind(self,name):
-        self.c.execute("SELECT mealID FROM meal WHERE name=?",(name,))
+    def DB_type_find(self, Type):
+        self.c.execute("SELECT typeID FROM Type WHERE typeName=?",(Type,))
         temp=self.c.fetchone()
+        self.db.commit()
         if temp is None:
             return -1
         else:
             return temp[0]
 
-    def typeFind(self,type):
-        self.c.execute("SELECT typeID FROM meal_type WHERE name=?",(type,))
+    def DB_meal_find(self, meal):
+        self.c.execute("SELECT mealID FROM Meal WHERE mealName=?",(meal,))
         temp=self.c.fetchone()
+        self.db.commit()
+
         if temp is None:
             return -1
         else:
             return temp[0]
 
-    def productFind(self,productName):
-        self.c.execute("SELECT productID FROM products WHERE name=?",(productName,))
-        temp=self.c.fetchone()[0]
-        return temp
+    def DB_product_find(self, product):
+        self.c.execute("SELECT productID FROM Product WHERE productName=?",(product,))
+        temp=self.c.fetchone()
+        self.db.commit()
+        if temp is None:
+            return -1
+        else:
+            return temp[0]
 
-db=DBoperation("test.py")
-db.DB_outside_query("SELECT * FROM Product")
+    def get_products_names(self):
+        self.c.execute("SELECT productName FROM Product")
+        temp=self.c.fetchall()
+        self.db.commit()
+        templist=[]
+        for tuple in temp:
+            templist.append(tuple[0])
+        return templist
+
+
+    #
+    #
+    # def DB_print_product(self, n="all"):
+    #     self.c.execute("SELECT * FROM products")
+    #     if n == "all":
+    #         return self.c.fetchall()
+    #     else:
+    #         return self.c.fetchmany(n)
+    #
+    # def DB_print_meals_from_day(self,day):
+    #     self.c.execute("SELECT mealID FROM food_record WHERE date=?",(day,))
+    #     return self.c.fetchall()
+    #
+    # def DB_print_meal(self, n="all"):
+    #     self.c.execute("SELECT * FROM meal")
+    #     if n == "all":
+    #         return self.c.fetchall()
+    #     else:
+    #         return self.c.fetchmany(n)
+    #
+    # def DB_print_meal_products(self, mealID):
+    #     self.c.execute("SELECT productID FROM meal_product WHERE mealID=?",(mealID,))
+    #     if mealID == -1:
+    #         return -1
+    #     else:
+    #         return self.c.fetchall()
+    #
+    # def DB_print_type(self, n="all"):
+    #     self.c.execute("SELECT * FROM meal_type")
+    #     if n == "all":
+    #         return self.c.fetchall()
+    #     else:
+    #         return self.c.fetchmany(n)
+    #
+    # def DB_all_table_clear(self):
+    #     self.c.execute("DELETE FROM products")
+    #     self.c.execute("DELETE FROM meal")
+    #     self.c.execute("DELETE FROM meal_type")
+    #     self.c.execute("DELETE FROM food_record")
+    #     self.c.execute("DELETE FROM meal_product")
+    #     self.typeCounter = 0
+    #     self.mealCounter = 0
+    #     self.productCounter = 0
+    #     self.recordID = 0
+    #     self.db.commit()
+    #
+    # def DB_product_nutrition(self, id, meal):
+    #     self.c.execute(
+    #         """SELECT ROUND(products.kcal*(CAST(meal_product.weigth AS REAL)/100),2),
+    #             ROUND(products.carbo*(CAST(meal_product.weigth AS REAL)/100),2),
+    #             ROUND(products.sugar*(CAST(meal_product.weigth AS REAL)/100),2),
+    #             ROUND(products.protein*(CAST(meal_product.weigth AS REAL)/100),2),
+    #             ROUND(products.fat*(CAST(meal_product.weigth AS REAL)/100),2)
+    #             FROM products LEFT JOIN meal_product ON products.productID=meal_product.productID
+    #             WHERE products.productID=? AND meal_product.mealID=?""", (id, meal))
+    #
+    #     temp = self.c.fetchone()
+    #     nutrition = {'kcal': temp[0], 'carbo': temp[1], 'sugar': temp[2], 'protein': temp[3], 'fat': temp[4]}
+    #     return nutrition
+    #
+    # def DB_meal_nutriton(self, meal):
+    #     self.c.execute("SELECT productID FROM meal_product WHERE mealID=?", (meal,))
+    #     t = {'kcal': 0, 'carbo': 0, 'sugar': 0, 'protein': 0, 'fat': 0}
+    #     for i in self.c.fetchall():
+    #         for key in t:
+    #             t[key] += self.DB_product_nutrition(i[0], meal)[key]
+    #
+    #     return t
+    #
+    # def DB_meal_price(self, meal):
+    #     self.c.execute(
+    #         "SELECT ROUND(price*weigth/100,2) FROM products LEFT JOIN meal_product ON products.productID=meal_product.productID WHERE mealID=?",
+    #         (meal,))
+    #     price = 0
+    #     for i in self.c.fetchall():
+    #         price += i[0]
+    #
+    #     return price
+    #
+    # def DB_add_meal(self, meal):
+    #     self.c.execute("INSERT INTO food_record VALUES(?,?,DATE('NOW'))", (self.Set_record_ID(), meal))
+    #     self.db.commit()
+    #
+    # def Set_record_ID(self):
+    #     self.recordID += 1
+    #     return self.recordID
+    #
+    # def today(self):
+    #     self.c.execute("SELECT DATE('NOW')")
+    #     return self.c.fetchone()[0]
+    #
+    # def DB_day_nutrition(self, day):
+    #     self.c.execute("SELECT mealID FROM food_record WHERE date=?", (day,))
+    #     t = {'kcal': 0, 'carbo': 0, 'sugar': 0, 'protein': 0, 'fat': 0}
+    #     for i in self.c.fetchall():
+    #         for key in t:
+    #             t[key] += self.DB_meal_nutriton(i[0])[key]
+    #
+    #     return t
+    #
+    #
+    #
+    # def DB_meal_weight_update(self,meal,product,weight):
+    #     self.c.execute("UPDATE meal_product SET weigth=? WHERE mealID=? AND productID=?",(weight,meal,product))
+    #     self.db.commit()
+    #
+    # def DB_meal_product_delete(self,meal,product):
+    #     self.c.execute("DELETE FROM meal_product WHERE mealID=? AND productID=?",(meal,product))
+    #     self.db.commit()
+    #
+    # def DB_meal_delete(self,meal):
+    #     self.c.execute("DELETE FROM meal_product WHERE mealID=?",(meal,))
+    #     self.c.execute("DELETE FROM meal WHERE mealID=?",(meal,))
+    #     self.mealCounter-=1
+    #     self.db.commit()
+    #
+    # def mealCheck(self,id):
+    #     self.c.execute("SELECT * FROM meal WHERE mealID=?",(id,))
+    #     if self.c.fetchone() is None:
+    #         return False
+    #     else:
+    #         return True
+    #
+    # def typeCheck(self,id):
+    #     self.c.execute("SELECT * FROM meal_type WHERE typeID=?",(id,))
+    #     if self.c.fetchone() is None:
+    #         return False
+    #     else:
+    #         return True
+    #
+    # def mealFind(self,name):
+    #     self.c.execute("SELECT mealID FROM meal WHERE name=?",(name,))
+    #     temp=self.c.fetchone()
+    #     if temp is None:
+    #         return -1
+    #     else:
+    #         return temp[0]
+    #
+
+    #
+    # def productFind(self,productName):
+    #     self.c.execute("SELECT productID FROM products WHERE name=?",(productName,))
+    #     temp=self.c.fetchone()[0]
+    #     return temp
+
+
+# db.DB_outside_query("SELECT * FROM Meal")
+# db.DB_outside_query("SELECT * FROM Type")
+# print(db.get_products_names())
+
+
+
 #obj.DB_outside_query("SELECT * FROM products")
 # obj.DB_outside_query("SELECT * FROM meal_type")
 #obj.DB_all_table_clear()

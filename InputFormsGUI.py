@@ -119,6 +119,9 @@ class FromLargeInputBox(FormInputBox):
     def alpha_correct(self, inputWidget, image,numeric):
         pass
 
+    def get_text(self):
+        return self.formLineEdit.toPlainText()
+
 class FormComboBox(FormInputBox):
     def __init__(self, xpos, ypos, width, height, text, where, options):
         super(FormComboBox,self).__init__(xpos, ypos, width, height, text, where)

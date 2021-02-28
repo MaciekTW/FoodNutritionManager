@@ -2,10 +2,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QLineEdit, QCompleter, QDesktopWidget
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QFont
 from InputFormsGUI import FormInputBox, FromLargeInputBox, FormComboBox, FormCompleterInput
+from DatabaseImplementation import DBoperation
+from GlobalVariables import GlobalVariables
 
 
-class MealAddGUI:
+class MealAddGUI(GlobalVariables):
     def __init__(self, workspace):
+        super().__init__()
         self.robotoFontFamily = QtGui.QFontDatabase.applicationFontFamilies(
             QtGui.QFontDatabase.addApplicationFont("Fonts/Roboto-Regular.ttf"))
 
@@ -14,6 +17,8 @@ class MealAddGUI:
 
         self.robotoFontFamily.append(QtGui.QFontDatabase.applicationFontFamilies(
             QtGui.QFontDatabase.addApplicationFont("Fonts/Roboto-BoldCondensed.ttf")))
+
+
 
         self.workScreen = workspace
         self.mainScreen = QtWidgets.QFrame(self.workScreen)
@@ -90,13 +95,13 @@ class MealAddGUI:
         self.formFrame.move(0, 120)
         # self.formFrame.setStyleSheet("background-color:green")
 
-        options = ["Brekfakt", "Dinner", "Supper", "Snack", " ij"]
+        options = ["Breakfast", "Dinner", "Supper", "Snack", " ij"]
 
         self.mealNameInput = FormInputBox(15, 0, 630, 80, "Meal name", self.formFrame, False)
 
-        self.ingredientInput = FormCompleterInput(15, 240, 430, 80, "First Ingredient", self.formFrame, options)
+        self.ingredientInput = FormCompleterInput(15, 240, 430, 80, "First Ingredient", self.formFrame, self.DB.get_products_names())
         self.weightInput = FormInputBox(475, 240, 170, 80, "Weight", self.formFrame, True)
-        self.descInput = FromLargeInputBox(15, 360, 630, 200, "Description", self.formFrame)
+        self.descInput = FromLargeInputBox(15, 360, 630, 200, "Recipe (optional)", self.formFrame)
         self.typeInput = FormComboBox(15, 120, 630, 80, "Meal type", self.formFrame, options)
 
         self.submitButton = QtWidgets.QPushButton(self.formFrame)
@@ -111,6 +116,8 @@ class MealAddGUI:
         self.submitButton.setFont(QtGui.QFont(self.robotoFontFamily[2][0]))
         self.submitButton.setText("Submit")
         self.submitButton.setGraphicsEffect(self.shadow_make())
+        ingredients = []
+        self.submitButton.clicked.connect(lambda: self.recipe_add(ingredients))
 
         self.clsButton = QtWidgets.QPushButton(self.formFrame)
         self.clsButton.resize(174, 80)
@@ -137,7 +144,7 @@ class MealAddGUI:
         self.addButton.setFont(QtGui.QFont(self.robotoFontFamily[2][0]))
         self.addButton.setText("Next")
         self.addButton.setGraphicsEffect(self.shadow_make())
-        ingredients=[]
+
         self.addButton.clicked.connect(lambda: self.next_ingredient(ingredients))
 
     def show(self):
@@ -155,10 +162,25 @@ class MealAddGUI:
         return shadowObj
 
     def next_ingredient(self,list):
-        list.append({'name':self.ingredientInput.get_text(),'weight':int(self.weightInput.get_text())})
+        list.append({'nameID':self.DB.DB_product_find(self.ingredientInput.get_text()),'weight':int(self.weightInput.get_text())})
         self.mealNameInput.set_enable(False)
         self.typeInput.set_enable(False)
         self.ingredientInput.clear()
         self.weightInput.clear()
-        print(list)
+
+    def recipe_add(self,list):
+        typeID=self.DB.DB_type_find(self.typeInput.get_text())
+        mealID=self.DB.DB_meal_find(self.mealNameInput.get_text())
+
+        self.DB.DB_meal_insert(self.mealNameInput.get_text(), typeID, self.descInput.get_text())
+        for ingredient in list:
+             self.DB.DB_meal_product_insert(mealID,ingredient['nameID'])
+             self.DB.DB_record_insert(mealID,ingredient['nameID'],ingredient['weight'])
+
+        self.DB.Set_record_ID()
+        self.ingredientInput.clear()
+        self.weightInput.clear()
+        self.mealNameInput.clear()
+        self.typeInput.clear()
+        self.descInput.clear()
 

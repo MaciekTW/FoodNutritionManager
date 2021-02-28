@@ -3,10 +3,12 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QLine
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QFont
 from InputFormsGUI import FormInputBox
 from DatabaseImplementation import DBoperation
+from GlobalVariables import GlobalVariables
 
 
-class ProductAddGUI:
+class ProductAddGUI(GlobalVariables):
     def __init__(self, workspace):
+        super().__init__()
         self.robotoFontFamily = QtGui.QFontDatabase.applicationFontFamilies(
             QtGui.QFontDatabase.addApplicationFont("Fonts/Roboto-Regular.ttf"))
 
@@ -18,7 +20,6 @@ class ProductAddGUI:
 
         print(self.robotoFontFamily)
 
-        self.DB=DBoperation("test.py")
 
         self.workScreen = workspace
         self.mainScreen = QtWidgets.QFrame(self.workScreen)
@@ -165,6 +166,8 @@ class ProductAddGUI:
                                   float(self.fatInput.get_text()),
                                   float(self.priceInput.get_text()),
                                   float(self.weightInput.get_text()))
+
+
 
         self.clear()
 
