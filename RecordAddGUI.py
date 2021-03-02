@@ -1,8 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QLineEdit, QCompleter, QDesktopWidget
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QFont
-from InputFormsGUI import FormInputBox,FromLargeInputBox,FormViewEmpty
-
+from InputFormsGUI import FormInputBox,FromLargeInputBox,FormViewEmpty,FormCompleterInput
+import GlobalVariables
 
 class RecordAddGui:
     def __init__(self, workspace):
@@ -94,12 +94,11 @@ class RecordAddGui:
         #self.formFrame.setStyleSheet("background-color:green")
 
 
-        options=["Brekfakt","Dinner","Supper","Snack"," ij"]
+        self.mealNameInput=FormCompleterInput(15,0,500,80,"Meal name",self.formFrame,GlobalVariables.DB.get_meals_names())
 
-        self.mealNameInput=FormInputBox(15,0,500,80,"Meal name",self.formFrame,False)
-
+        self.mealNameInput.get_text_element().textChanged.connect(self.kcal_view)
         self.mealKcalView = FormViewEmpty(535, 0, 110, 80, "Kcal", self.formFrame)
-        self.mealKcalView.basic_icon_set("")
+
 
         self.descInput=FromLargeInputBox(15,120,630,440,"Ingredients List",self.formFrame)
 
@@ -145,3 +144,19 @@ class RecordAddGui:
         shadowObj.setXOffset(xOff)
         shadowObj.setYOffset(yOff)
         return shadowObj
+
+    def kcal_view(self):
+        mealID=GlobalVariables.DB.DB_meal_find(self.mealNameInput.get_text())
+
+        if mealID != -1:
+            kcal=GlobalVariables.DB.get_meal_kcal(mealID)
+            ingredientList=""
+            for ingredient in GlobalVariables.DB.get_meal_ingredients(mealID):
+                ingredientList+=ingredient[0]+"\t\t"+str(ingredient[1])+"\n"
+            self.mealKcalView.set_text(str(kcal[0]))
+            self.descInput.set_text(ingredientList)
+        else:
+            return
+
+
+

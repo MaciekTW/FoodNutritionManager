@@ -3,10 +3,10 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QLine
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QFont
 from InputFormsGUI import FormInputBox
 from DatabaseImplementation import DBoperation
-from GlobalVariables import GlobalVariables
+import GlobalVariables
 
 
-class ProductAddGUI(GlobalVariables):
+class ProductAddGUI:
     def __init__(self, workspace):
         super().__init__()
         self.robotoFontFamily = QtGui.QFontDatabase.applicationFontFamilies(
@@ -158,7 +158,7 @@ class ProductAddGUI(GlobalVariables):
 
     def product_add(self):
         print(self.productNameInput.get_text())
-        self.DB.DB_product_insert(self.productNameInput.get_text(),
+        GlobalVariables.DB.DB_product_insert(self.productNameInput.get_text(),
                                   float(self.kcalInput.get_text()),
                                   float(self.carboInput.get_text()),
                                   float(self.sugarInput.get_text()),

@@ -3,10 +3,10 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QLine
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QFont
 from InputFormsGUI import FormInputBox, FromLargeInputBox, FormComboBox, FormCompleterInput
 from DatabaseImplementation import DBoperation
-from GlobalVariables import GlobalVariables
+import GlobalVariables
 
 
-class MealAddGUI(GlobalVariables):
+class MealAddGUI:
     def __init__(self, workspace):
         super().__init__()
         self.robotoFontFamily = QtGui.QFontDatabase.applicationFontFamilies(
@@ -95,11 +95,11 @@ class MealAddGUI(GlobalVariables):
         self.formFrame.move(0, 120)
         # self.formFrame.setStyleSheet("background-color:green")
 
-        options = ["Breakfast", "Dinner", "Supper", "Snack", " ij"]
+        options = ["Breakfast", "Dinner", "Supper", "Snack", " Desert"]
 
         self.mealNameInput = FormInputBox(15, 0, 630, 80, "Meal name", self.formFrame, False)
 
-        self.ingredientInput = FormCompleterInput(15, 240, 430, 80, "First Ingredient", self.formFrame, self.DB.get_products_names())
+        self.ingredientInput = FormCompleterInput(15, 240, 430, 80, "First Ingredient", self.formFrame, GlobalVariables.DB.get_products_names())
         self.weightInput = FormInputBox(475, 240, 170, 80, "Weight", self.formFrame, True)
         self.descInput = FromLargeInputBox(15, 360, 630, 200, "Recipe (optional)", self.formFrame)
         self.typeInput = FormComboBox(15, 120, 630, 80, "Meal type", self.formFrame, options)
@@ -162,22 +162,16 @@ class MealAddGUI(GlobalVariables):
         return shadowObj
 
     def next_ingredient(self,list):
-        list.append({'nameID':self.DB.DB_product_find(self.ingredientInput.get_text()),'weight':int(self.weightInput.get_text())})
+        list.append({'nameID':GlobalVariables.DB.DB_product_find(self.ingredientInput.get_text()),'weight':int(self.weightInput.get_text())})
         self.mealNameInput.set_enable(False)
         self.typeInput.set_enable(False)
         self.ingredientInput.clear()
         self.weightInput.clear()
 
     def recipe_add(self,list):
-        typeID=self.DB.DB_type_find(self.typeInput.get_text())
-        mealID=self.DB.DB_meal_find(self.mealNameInput.get_text())
+        GlobalVariables.DB.add_record(list,self.typeInput.get_text(),self.mealNameInput.get_text(),self.descInput.get_text())
 
-        self.DB.DB_meal_insert(self.mealNameInput.get_text(), typeID, self.descInput.get_text())
-        for ingredient in list:
-             self.DB.DB_meal_product_insert(mealID,ingredient['nameID'])
-             self.DB.DB_record_insert(mealID,ingredient['nameID'],ingredient['weight'])
-
-        self.DB.Set_record_ID()
+        GlobalVariables.DB.Set_record_ID()
         self.ingredientInput.clear()
         self.weightInput.clear()
         self.mealNameInput.clear()

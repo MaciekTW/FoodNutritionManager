@@ -93,6 +93,12 @@ class FormInputBox(BasicElement):
     def get_text(self):
         return self.formLineEdit.text()
 
+    def get_text_element(self):
+        return self.formLineEdit
+
+    def set_text(self,text):
+        self.formLineEdit.setText(text)
+
     def set_enable(self,isEnable):
         self.formLineEdit.setEnabled(isEnable)
 
