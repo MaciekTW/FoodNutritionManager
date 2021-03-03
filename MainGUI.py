@@ -8,6 +8,7 @@ from RecordAddGUI import RecordAddGui
 from datetime import datetime
 from BasicElementGUI import BasicElement
 import random
+import GlobalVariables
 
 class MainGUI(QWidget):
 
@@ -640,6 +641,7 @@ class MainGUI(QWidget):
         self.todayTable.horizontalHeader().setDefaultSectionSize(94)
         self.todayTable.verticalHeader().setDefaultSectionSize(42)
         self.todayTable.setColumnWidth(0,275)
+        self.table_update()
         alignment = QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter
 
 
@@ -821,6 +823,10 @@ class MainGUI(QWidget):
         self.homeButton.setStyleSheet("%s QPushButton {border-right:8px solid #117182;}" % temp)
 
     def meal_add_button(self,screenList):
+        screenList.remove(self.mealAddGUI)
+        del self.mealAddGUI
+        self.mealAddGUI=MealAddGUI(self.workingSpaceForOtherScreens)
+        screenList.append(self.mealAddGUI)
         self.hide_all_screens(screenList)
         temp = self.mealAddButton.styleSheet()
         self.panel_marker_off()
@@ -836,6 +842,10 @@ class MainGUI(QWidget):
 
 
     def record_add_button(self,screenList):
+        screenList.remove(self.recordAddGUI)
+        del self.recordAddGUI
+        self.recordAddGUI=RecordAddGui(self.workingSpaceForOtherScreens)
+        screenList.append(self.recordAddGUI)
         self.hide_all_screens(screenList)
         temp = self.recordAddButton.styleSheet()
         self.panel_marker_off()
@@ -873,6 +883,21 @@ class MainGUI(QWidget):
         shadowObj.setXOffset(xOff)
         shadowObj.setYOffset(yOff)
         return shadowObj
+
+    def table_update(self):
+        for meal in GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()):
+            item=QtWidgets.QTableWidgetItem(GlobalVariables.DB.meal_name_from_record(meal[1],meal[0])[0][0])
+            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()).index(meal)+1,0, item)
+            item=QtWidgets.QTableWidgetItem(str(round(GlobalVariables.DB.meal_kcal_from_record(meal[1], meal[0])[0],2)))
+            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()).index(meal)+1,1, item)
+            item=QtWidgets.QTableWidgetItem(str(round(GlobalVariables.DB.meal_carbo_from_record(meal[1], meal[0])[0][0],2)))
+            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()).index(meal)+1,2, item)
+            item=QtWidgets.QTableWidgetItem(str(round(GlobalVariables.DB.meal_sugar_from_record(meal[1], meal[0])[0][0],2)))
+            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()).index(meal)+1,3, item)
+            item=QtWidgets.QTableWidgetItem(str(round(GlobalVariables.DB.meal_protein_from_record(meal[1], meal[0])[0][0],2)))
+            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()).index(meal)+1,4, item)
+            item=QtWidgets.QTableWidgetItem(str(round(GlobalVariables.DB.meal_fat_from_record(meal[1], meal[0])[0][0],2)))
+            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()).index(meal)+1,5, item)
 
     def show(self):
         self.workingSpace.setVisible(True)

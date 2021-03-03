@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QLine
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QFont
 from InputFormsGUI import FormInputBox,FromLargeInputBox,FormViewEmpty,FormCompleterInput
 import GlobalVariables
+import re
 
 class RecordAddGui:
     def __init__(self, workspace):
@@ -103,6 +104,7 @@ class RecordAddGui:
         self.descInput=FromLargeInputBox(15,120,630,440,"Ingredients List",self.formFrame)
 
 
+
         self.submitButton=QtWidgets.QPushButton(self.formFrame)
         self.submitButton.resize(260,80)
         self.submitButton.move(60,620)
@@ -115,6 +117,8 @@ class RecordAddGui:
         self.submitButton.setFont(QtGui.QFont(self.robotoFontFamily[2][0]))
         self.submitButton.setText("Submit")
         self.submitButton.setGraphicsEffect(self.shadow_make())
+        self.submitButton.clicked.connect(self.add_daily_meal)
+
 
         self.clsButton=QtWidgets.QPushButton(self.formFrame)
         self.clsButton.resize(260,80)
@@ -128,6 +132,7 @@ class RecordAddGui:
         self.clsButton.setFont(QtGui.QFont(self.robotoFontFamily[2][0]))
         self.clsButton.setText("Clear")
         self.clsButton.setGraphicsEffect(self.shadow_make())
+        self.clsButton.clicked.connect(self.input_clear)
 
 
 
@@ -157,6 +162,25 @@ class RecordAddGui:
             self.descInput.set_text(ingredientList)
         else:
             return
+
+
+    def add_daily_meal(self):
+        weights=re.findall('[0-9]+',self.descInput.get_text())
+        mealID=GlobalVariables.DB.DB_meal_find(self.mealNameInput.get_text())
+        ingredients=GlobalVariables.DB.get_meal_ingredients(mealID)
+
+        for i in ingredients:
+            GlobalVariables.DB.DB_record_insert(mealID,GlobalVariables.DB.DB_product_find(i[0]),weights[ingredients.index(i)])
+
+        GlobalVariables.DB.Set_record_ID()
+        GlobalVariables.DB.DB_daily_record_insert(GlobalVariables.DB.DB_record_find(mealID),GlobalVariables.userAccount)
+        self.input_clear()
+
+    def input_clear(self):
+        self.descInput.clear()
+        self.mealNameInput.clear()
+        self.mealKcalView.clear()
+
 
 
 
