@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QLineEdit, QCompleter, QDesktopWidget
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QFont
-from InputFormsGUI import FormInputBox
+from InputFormsGUI import FormInputBox,FormInputOptional
 from DatabaseImplementation import DBoperation
 import GlobalVariables
 
@@ -94,6 +94,11 @@ class ProductAddGUI:
         self.titleLab.setFont(QtGui.QFont(self.robotoFontFamily[1][0]))
         self.titleLab.setText("Use the form below to add new product")
 
+        self.errorLab=QtWidgets.QLabel(self.rightWidgetMiddleFrame)
+        self.errorLab.move(12,86)
+        self.errorLab.setFont(QtGui.QFont(self.robotoFontFamily[2][0]))
+        self.errorLab.setMinimumWidth(640)
+
         self.formFrame=QtWidgets.QFrame(self.rightWidgetMiddleFrame)
         self.formFrame.resize(660,730)
         self.formFrame.move(0,120)
@@ -107,7 +112,7 @@ class ProductAddGUI:
         self.proteinInput = FormInputBox(345, 240, 300, 80, "Protein", self.formFrame,True)
         self.fatInput=FormInputBox(15,360,300,80,"Fat",self.formFrame,True)
         self.weightInput = FormInputBox(345, 360, 300, 80, "Product weight", self.formFrame,True)
-        self.descInput=FormInputBox(15,480,440,80,"Description",self.formFrame,False)
+        self.descInput=FormInputOptional(15,480,440,80,"Description (optional)",self.formFrame)
         self.priceInput = FormInputBox(485, 480, 160, 80, "Price", self.formFrame,True)
 
 
@@ -137,7 +142,7 @@ class ProductAddGUI:
         self.clsButton.setText("Clear")
         self.clsButton.setGraphicsEffect(self.shadow_make())
 
-        self.clsButton.clicked.connect(self.clear)
+        self.clsButton.clicked.connect(lambda: self.clear(True))
         self.submitButton.clicked.connect(self.product_add)
 
 
@@ -157,7 +162,36 @@ class ProductAddGUI:
         return shadowObj
 
     def product_add(self):
-        print(self.productNameInput.get_text())
+        self.errorLab.setStyleSheet("font-size:16px;color:red;")
+        if not self.productNameInput.isCorrect:
+            self.errorLab.setText("Failure: Wrong product name")
+            return
+        if not self.kcalInput.isCorrect:
+            self.errorLab.setText("Failure: Wrong kcal input")
+            return
+        if not self.carboInput.isCorrect:
+            self.errorLab.setText("Failure: Wrong carbo input")
+            return
+        if not self.sugarInput.isCorrect:
+            self.errorLab.setText("Failure: Wrong sugar input")
+            return
+        if not self.proteinInput.isCorrect:
+            self.errorLab.setText("Failure: Wrong protein input")
+            return
+        if not self.fatInput.isCorrect:
+            self.errorLab.setText("Failure: Wrong fat input")
+            return
+        if not self.priceInput.isCorrect:
+            self.errorLab.setText("Failure: Wrong price provided")
+            return
+        if not self.weightInput.isCorrect:
+            self.errorLab.setText("Failure: Wrong product weight")
+            return
+        if self.descInput=="":
+            desc=" "
+        else:
+            desc=self.descInput.get_text()
+
         GlobalVariables.DB.DB_product_insert(self.productNameInput.get_text(),
                                   float(self.kcalInput.get_text()),
                                   float(self.carboInput.get_text()),
@@ -165,13 +199,17 @@ class ProductAddGUI:
                                   float(self.proteinInput.get_text()),
                                   float(self.fatInput.get_text()),
                                   float(self.priceInput.get_text()),
-                                  float(self.weightInput.get_text()))
+                                  float(self.weightInput.get_text()),
+                                  desc)
+
+        self.errorLab.setStyleSheet("font-size:16px;color:green;")
+        self.errorLab.setText("Product added")
 
 
 
-        self.clear()
+        self.clear(False)
 
-    def clear(self):
+    def clear(self,error):
         self.productNameInput.clear()
         self.carboInput.clear()
         self.kcalInput.clear()
@@ -180,4 +218,7 @@ class ProductAddGUI:
         self.fatInput.clear()
         self.priceInput.clear()
         self.weightInput.clear()
+        if error:
+            self.errorLab.clear()
+            print("test")
 

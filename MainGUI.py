@@ -5,8 +5,9 @@ from PyQt5.QtGui import QStandardItem, QStandardItemModel, QFont
 from ProductAddGUI import ProductAddGUI
 from MealAddGUI import MealAddGUI
 from RecordAddGUI import RecordAddGui
-from datetime import date,timedelta
+from datetime import date,timedelta,datetime
 from BasicElementGUI import BasicElement
+import re
 import random
 import GlobalVariables
 
@@ -225,11 +226,12 @@ class MainGUI(QWidget):
                                            "QListWidget:item:hover{"
                                            "background-color:#117182;}"
                                            "QListWidget:item:selected{"
-                                           "background-color:#42afc2;}"
-                                           )
+                                           "background-color:#42afc2;}")
         self.weekSummaryList.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.weekSummaryList.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.weekSummaryList.wheelEvent=self.scroll_lock
+
+        self.weekSummaryList.itemDoubleClicked.connect(self.list_item_clicked)
 
         self.week_summary()
 
@@ -514,6 +516,7 @@ class MainGUI(QWidget):
         self.recipeScrollArea.move(20, 75)
         self.recipeScrollArea.horizontalScrollBar().setVisible(False)
         self.recipeScrollArea.setMinimumHeight(500)
+        self.recipeScrollArea.setMinimumWidth(520)
         stylesheet = """
          /* --------------------------------------- QScrollBar  -----------------------------------*/
          QScrollBar:vertical
@@ -636,7 +639,7 @@ class MainGUI(QWidget):
         self.todayTable.horizontalHeader().setDefaultSectionSize(94)
         self.todayTable.verticalHeader().setDefaultSectionSize(42)
         self.todayTable.setColumnWidth(0,275)
-        self.table_update()
+        self.table_update(GlobalVariables.DB.today())
         alignment = QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter
 
 
@@ -707,6 +710,8 @@ class MainGUI(QWidget):
         self.firstProgressBarLimit.setText('<span style="text-align:center;">Limit: 1800</span>')
         self.firstProgressBarLimit.move(0, 8)
 
+        self.day_progress_bar()
+
         self.secondProgressBar = QtWidgets.QFrame(self.seventhWidget)
         self.secondProgressBar.resize(236, 236)
         self.secondProgressBar.move(300, 45)
@@ -754,7 +759,7 @@ class MainGUI(QWidget):
         self.thirdProgressBarProgress = QtWidgets.QFrame(self.thirdProgressBar)
         self.thirdProgressBarProgress.resize(236, 236)
         self.thirdProgressBarProgress.setStyleSheet(
-            "border-radius:118%;	background-color: qconicalgradient(cx:0.5, cy:0.5, angle:90, stop:0.549 rgba(142, 142, 142,0.95), stop:0.550 #6e41ff);")
+            "border-radius:118%;	background-color: qconicalgradient(cx:0.5, cy:0.5, angle:90, stop:0.999 rgba(142, 142, 142,0.95), stop:1.000 #6e41ff);")
         self.thirdProgressBarInnerBg = QtWidgets.QFrame(self.thirdProgressBarProgress)
         self.thirdProgressBarInnerBg.resize(206, 206)
         self.thirdProgressBarInnerBg.move(15, 15)
@@ -786,6 +791,8 @@ class MainGUI(QWidget):
         self.thirdProgressBarLimit.setAlignment(QtCore.Qt.AlignHCenter)
         self.thirdProgressBarLimit.setText('<span style="text-align:center;">Limit: 12600</span>')
         self.thirdProgressBarLimit.move(0, 8)
+        self.week_progress_bar()
+
 
         self.mainScreenWidgets = [self.firstWidget, self.secondWidget, self.thirdWidget, self.fourthWidget,
                                   self.fifthWidget, self.sixthWidget, self.seventhWidget]
@@ -812,7 +819,7 @@ class MainGUI(QWidget):
 
     def home_screen_button(self,screenList):
         self.hide_all_screens(screenList)
-        self.table_update()
+        self.table_update(GlobalVariables.DB.today())
         self.workingSpace.show()
         temp = self.homeButton.styleSheet()
         self.panel_marker_off()
@@ -830,6 +837,10 @@ class MainGUI(QWidget):
         self.mealAddGUI.show()
 
     def product_add_button(self,screenList):
+        screenList.remove(self.productAddGUI)
+        del self.productAddGUI
+        self.productAddGUI=ProductAddGUI(self.workingSpaceForOtherScreens)
+        screenList.append(self.productAddGUI)
         self.hide_all_screens(screenList)
         temp = self.productAddButton.styleSheet()
         self.panel_marker_off()
@@ -880,28 +891,48 @@ class MainGUI(QWidget):
         shadowObj.setYOffset(yOff)
         return shadowObj
 
-    def table_update(self):
-        for meal in GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()):
+    def table_update(self,day):
+        for meal in GlobalVariables.DB.day_meals_print(day):
             item=QtWidgets.QTableWidgetItem(GlobalVariables.DB.meal_name_from_record(meal[1],meal[0])[0][0])
-            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()).index(meal)+1,0, item)
+            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(day).index(meal)+1,0, item)
             item=QtWidgets.QTableWidgetItem(str(round(GlobalVariables.DB.meal_kcal_from_record(meal[1], meal[0])[0],2)))
-            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()).index(meal)+1,1, item)
+            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(day).index(meal)+1,1, item)
             item=QtWidgets.QTableWidgetItem(str(round(GlobalVariables.DB.meal_carbo_from_record(meal[1], meal[0])[0][0],2)))
-            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()).index(meal)+1,2, item)
+            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(day).index(meal)+1,2, item)
             item=QtWidgets.QTableWidgetItem(str(round(GlobalVariables.DB.meal_sugar_from_record(meal[1], meal[0])[0][0],2)))
-            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()).index(meal)+1,3, item)
+            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(day).index(meal)+1,3, item)
             item=QtWidgets.QTableWidgetItem(str(round(GlobalVariables.DB.meal_protein_from_record(meal[1], meal[0])[0][0],2)))
-            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()).index(meal)+1,4, item)
+            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(day).index(meal)+1,4, item)
             item=QtWidgets.QTableWidgetItem(str(round(GlobalVariables.DB.meal_fat_from_record(meal[1], meal[0])[0][0],2)))
-            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()).index(meal)+1,5, item)
+            self.todayTable.setItem(GlobalVariables.DB.day_meals_print(day).index(meal)+1,5, item)
 
     def week_summary(self):
         for i in range(7):
-            print()
             dateMarker=date.today()-timedelta(days=i)
-            item = QtWidgets.QListWidgetItem("Day: {}\tEaten: {} Kcal\tLeft: {} Kcal".format(str(dateMarker.strftime("%d.%m.%Y")),str(int(GlobalVariables.DB.kcal_from_day(str(dateMarker)))),str(GlobalVariables.DB.get_user_kcal_limit(GlobalVariables.DB.get_active_user()[0])[0]-int(GlobalVariables.DB.kcal_from_day(str(dateMarker))))), self.weekSummaryList)
+            kcalDay=int(GlobalVariables.DB.kcal_from_day(str(dateMarker)))
+            if len(str(kcalDay)) == 2:
+                spaces="  "
+            elif len(str(kcalDay)) == 1:
+                spaces="    "
+            else:
+                spaces=" "
+
+            item = QtWidgets.QListWidgetItem("Day: {}\tEaten: {}{}Kcal\tLeft: {} Kcal".format(
+                str(dateMarker.strftime("%d.%m.%Y")),
+                str(kcalDay),
+                spaces,
+                str(GlobalVariables.DB.get_user_kcal_limit(GlobalVariables.DB.get_active_user()[0])[0]-kcalDay)),
+                self.weekSummaryList)
+
             item.setTextAlignment(QtCore.Qt.AlignHCenter)
             item.setSizeHint(QtCore.QSize(480, 35))
+
+
+    def list_item_clicked(self,item):
+        itemDate = re.findall('[0-9]+.[0-9]+.[0-9]+', item.text())
+        dayInRightFormat=datetime.strptime(itemDate[0],"%d.%m.%Y")
+        self.table_update(dayInRightFormat.strftime("%Y-%m-%d"))
+        self.dayLabel.setText(itemDate[0])
 
     def show(self):
         self.workingSpace.setVisible(True)
@@ -911,6 +942,30 @@ class MainGUI(QWidget):
 
     def scroll_lock(self, event):
             pass
+
+
+    def day_progress_bar(self):
+        dayKcal=GlobalVariables.DB.kcal_from_day(GlobalVariables.DB.today())
+        userLimit=GlobalVariables.DB.get_user_kcal_limit(GlobalVariables.DB.get_active_user()[0])
+        dayProcent=int(round(dayKcal/userLimit[0]*100,0))
+        self.firstProgressBarLimit.setText("Limit: {}".format(userLimit[0]))
+        self.firstProgressBarProcent.setText("{}<sup>%</sup>".format(dayProcent))
+        self.firstProgressBarProgress.setStyleSheet("border-radius:118%;background-color: qconicalgradient(cx:0.5, cy:0.5, angle:90, stop:{} rgba(142, 142, 142,0.95), stop:{} #ec008c);".format(1-dayProcent/100-0.001,1-dayProcent/100))
+
+    def week_progress_bar(self):
+        weekKcal=0
+        for i in range(7):
+            dateMarker = date.today() - timedelta(days=i)
+            weekKcal += int(GlobalVariables.DB.kcal_from_day(str(dateMarker)))
+
+
+        userLimit=7*GlobalVariables.DB.get_user_kcal_limit(GlobalVariables.DB.get_active_user()[0])[0]
+        dayProcent=int(round(weekKcal/userLimit*100,0))
+
+        self.thirdProgressBarLimit.setText("Limit: {}".format(userLimit))
+        self.thirdProgressBarProcent.setText("{}<sup>%</sup>".format(dayProcent))
+        self.thirdProgressBarProgress.setStyleSheet("border-radius:118%;background-color: qconicalgradient(cx:0.5, cy:0.5, angle:90, stop:{} rgba(142, 142, 142,0.95), stop:{} #6e41ff);".format(1-dayProcent/100-0.001,1-dayProcent/100))
+
 
 if __name__ == "__main__":
     import sys

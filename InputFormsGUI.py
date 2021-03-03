@@ -13,7 +13,7 @@ class FormInputBox(BasicElement):
         self.formCheckImage = QLabel(self.formFrame)
         self.formLineEdit = QLineEdit(self.formFrame)
         self.isNumeric=numeric
-
+        self.isCorrect=False
         self.create_element()
 
     def create_element(self):
@@ -81,10 +81,12 @@ class FormInputBox(BasicElement):
         self.formCheckImage.setPixmap(
             QtGui.QPixmap("graphics/003-checked.png").scaled(48, 48, QtCore.Qt.KeepAspectRatio,
                                                              QtCore.Qt.SmoothTransformation))
+        self.isCorrect=True
 
     def incorrect_icon_set(self, input):
         self.formCheckImage.setPixmap(QtGui.QPixmap("graphics/002-minus.png").scaled(48, 48, QtCore.Qt.KeepAspectRatio,
                                                                                      QtCore.Qt.SmoothTransformation))
+        self.isCorrect=False
 
     def basic_icon_set(self, ImageSrc):
         self.formCheckImage.setPixmap(QtGui.QPixmap("{}".format(ImageSrc)).scaled(48, 48, QtCore.Qt.KeepAspectRatio,
@@ -104,6 +106,9 @@ class FormInputBox(BasicElement):
 
     def clear(self):
         self.formLineEdit.clear()
+
+    def isCorect(self):
+        return self.isCorrect
 
 class FromLargeInputBox(FormInputBox):
     def __init__(self, xpos, ypos, width, height, text, where):
@@ -228,6 +233,17 @@ class FormCompleterInput(FormInputBox):
 
         for i in self.items:
             self.model.appendRow(QStandardItem(i))
+
+    def alpha_correct(self, inputWidget, image,numeric):
+        pass
+
+class FormInputOptional(FormInputBox):
+    def __init__(self, xpos, ypos, width, height, text, where):
+        super().__init__(xpos, ypos, width, height, text, where)
+
+        FormInputBox.create_element(self)
+
+
 
     def alpha_correct(self, inputWidget, image,numeric):
         pass

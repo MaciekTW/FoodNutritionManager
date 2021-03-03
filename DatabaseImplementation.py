@@ -68,7 +68,7 @@ class DBoperation:
         try:
             self.c = self.db.cursor()
             self.c.execute(
-                "CREATE TABLE Product(productID INT,productName TEXT, kcal REAL, carbo REAL, sugar REAL, protein REAL, fat REAL, packagePrice REAL, packageWeight REAL)")
+                "CREATE TABLE Product(productID INT,productName TEXT, kcal REAL, carbo REAL, sugar REAL, protein REAL, fat REAL, packagePrice REAL, packageWeight REAL,desc TEXT)")
             self.c.execute("CREATE TABLE Meal(mealID INT,mealName TEXT, typeID INT,recipe TEXT)")
             self.c.execute("CREATE TABLE Type(typeID INT, typeName TEXT)")
             self.c.execute("CREATE TABLE Product_Meal(mealID INT, productID INT)")
@@ -105,11 +105,11 @@ class DBoperation:
         self.db.commit()
         self.c.close()
 
-    def DB_product_insert(self, productName, kcal, carbo, sugar, protein, fat, packagePrice, packageWeight):
+    def DB_product_insert(self, productName, kcal, carbo, sugar, protein, fat, packagePrice, packageWeight,desc):
         self.c = self.db.cursor()
         self.c.execute(
-            "INSERT INTO Product VALUES(?,?,?,?,?,?,?,?,?)",
-            (self.Set_product_ID(), productName, kcal, carbo, sugar, protein, fat, packagePrice, packageWeight))
+            "INSERT INTO Product VALUES(?,?,?,?,?,?,?,?,?,?)",
+            (self.Set_product_ID(), productName, kcal, carbo, sugar, protein, fat, packagePrice, packageWeight,desc))
         self.db.commit()
         self.c.close()
 
@@ -433,6 +433,27 @@ class DBoperation:
         self.c = self.db.cursor()
         self.c.execute("SELECT User.userID FROM User LEFT JOIN DailyRecord ON DailyRecord.userID=User.userID ORDER BY date DESC")
         temp = self.c.fetchone()
+        self.c.close()
+        return temp
+
+    def get_user_height(self,userID):
+        self.c = self.db.cursor()
+        self.c.execute("SELECT userHeight FROM User WHERE userID=?",(userID,))
+        temp=self.c.fetchone()
+        self.c.close()
+        return temp
+
+    def get_user_weight_goal(self,userID):
+        self.c = self.db.cursor()
+        self.c.execute("SELECT userWeightGoal FROM User WHERE userID=?",(userID,))
+        temp=self.c.fetchone()
+        self.c.close()
+        return temp
+
+    def get_user_weight(self,userID):
+        self.c = self.db.cursor()
+        self.c.execute("SELECT Weight FROM User WHERE userID=?",(userID,))
+        temp=self.c.fetchone()
         self.c.close()
         return temp
 
