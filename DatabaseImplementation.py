@@ -121,6 +121,23 @@ class DBoperation:
         self.db.commit()
         self.c.close()
 
+    def DB_user_insert(self, name,height,weight,weightGoal,kcalLimit):
+        self.DB_weight_insert(self.Set_user_ID(),weight,self.today())
+        self.c = self.db.cursor()
+        self.c.execute(
+            "INSERT INTO User VALUES(?,?,?,?,?,?)",
+            (self.Get_user_Counter(), name,height,self.weightCounter,weightGoal,kcalLimit))
+        self.db.commit()
+        self.c.close()
+
+    def DB_weight_insert(self, userID,weight,data):
+        self.c = self.db.cursor()
+        self.c.execute(
+            "INSERT INTO Weight VALUES(?,?,?,?)",
+            (self.Set_weight_ID(), userID,weight,data))
+        self.db.commit()
+        self.c.close()
+
     def DB_product_meal_insert(self, mealID, productID):
         self.c = self.db.cursor()
         self.c.execute("INSERT INTO Product_Meal VALUES(?,?)", (mealID, productID))
@@ -145,6 +162,9 @@ class DBoperation:
 
     def Set_user_ID(self):
         self.userCounter += 1
+        return self.userCounter
+
+    def Get_user_Counter(self):
         return self.userCounter
 
     def Set_meal_ID(self):
@@ -386,14 +406,44 @@ class DBoperation:
         self.c.close()
         return temp
 
+    def kcal_from_day(self,day):
+        self.c = self.db.cursor()
+        self.c.execute(
+            """SELECT SUM(kcal*(CAST(productWeight AS REAL)/100)) 
+            FROM Product 
+            LEFT JOIN Record ON Product.productID=Record.productID 
+            LEFT JOIN DailyRecord ON DailyRecord.recordID=Record.recordID 
+            WHERE date=? GROUP BY(dailyID) ORDER BY Product.productID DESC""",
+            (day,))
+        temp = self.c.fetchall()
+        sum=0
+        for meal in temp:
+            sum+=meal[0]
+        self.c.close()
+        return round(sum,0)
 
+    def get_user_kcal_limit(self,userID):
+        self.c = self.db.cursor()
+        self.c.execute("SELECT userKcalLimit FROM User WHERE userID=?",(userID,))
+        temp=self.c.fetchone()
+        self.c.close()
+        return temp
+
+    def get_active_user(self):
+        self.c = self.db.cursor()
+        self.c.execute("SELECT User.userID FROM User LEFT JOIN DailyRecord ON DailyRecord.userID=User.userID ORDER BY date DESC")
+        temp = self.c.fetchone()
+        self.c.close()
+        return temp
 
 # db.DB_outside_query("SELECT * FROM Meal")
 # db.DB_outside_query("SELECT * FROM Type")
 # print(db.get_products_names())
 
 # options = ["Breakfast", "Dinner", "Supper", "Snack", " Desert"]
-# obj = DBoperation("tw.db")
+obj = DBoperation("tw.db")
+print(obj.kcal_from_day("obj.today()"))
+obj.DB_outside_query("SELECT * FROM Weight")
 # # obj.DB_outside_query("SELECT * FROM Meal")
 # # obj.DB_outside_query("SELECT * FROM Type")
 # obj.DB_outside_query("SELECT * FROM Product_Meal")

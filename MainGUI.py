@@ -5,7 +5,7 @@ from PyQt5.QtGui import QStandardItem, QStandardItemModel, QFont
 from ProductAddGUI import ProductAddGUI
 from MealAddGUI import MealAddGUI
 from RecordAddGUI import RecordAddGui
-from datetime import datetime
+from datetime import date,timedelta
 from BasicElementGUI import BasicElement
 import random
 import GlobalVariables
@@ -231,12 +231,7 @@ class MainGUI(QWidget):
         self.weekSummaryList.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.weekSummaryList.wheelEvent=self.scroll_lock
 
-        for i in range(7):
-            item = QtWidgets.QListWidgetItem("Day: 22.02.2021\tEaten: {} Kcal\tLeft: {} Kcal".format(random.randrange(1500,1800),random.randrange(100,300)), self.weekSummaryList)
-            item.setTextAlignment(QtCore.Qt.AlignHCenter)
-            item.setSizeHint(QtCore.QSize(480, 35))
-
-
+        self.week_summary()
 
         self.firstWidget.setGraphicsEffect(self.shadow_make())
         self.firstWidgetBar.setGraphicsEffect(self.shadow_make())
@@ -595,7 +590,7 @@ class MainGUI(QWidget):
         self.dayChoiceFrame.setStyleSheet("background-color:none;")
 
         self.dayLabel = QtWidgets.QLabel(self.dayChoiceFrame)
-        self.dayLabel.setText("{}".format(datetime.today().date().strftime('%d.%m.%Y')))
+        self.dayLabel.setText("{}".format(date.today().strftime('%d.%m.%Y')))
         self.dayLabel.setFont(momCakeFontBold)
         self.dayLabel.setStyleSheet("color:#fff;font-size:26px;")
         self.dayLabel.setMinimumHeight(32)
@@ -817,6 +812,7 @@ class MainGUI(QWidget):
 
     def home_screen_button(self,screenList):
         self.hide_all_screens(screenList)
+        self.table_update()
         self.workingSpace.show()
         temp = self.homeButton.styleSheet()
         self.panel_marker_off()
@@ -898,6 +894,14 @@ class MainGUI(QWidget):
             self.todayTable.setItem(GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()).index(meal)+1,4, item)
             item=QtWidgets.QTableWidgetItem(str(round(GlobalVariables.DB.meal_fat_from_record(meal[1], meal[0])[0][0],2)))
             self.todayTable.setItem(GlobalVariables.DB.day_meals_print(GlobalVariables.DB.today()).index(meal)+1,5, item)
+
+    def week_summary(self):
+        for i in range(7):
+            print()
+            dateMarker=date.today()-timedelta(days=i)
+            item = QtWidgets.QListWidgetItem("Day: {}\tEaten: {} Kcal\tLeft: {} Kcal".format(str(dateMarker.strftime("%d.%m.%Y")),str(int(GlobalVariables.DB.kcal_from_day(str(dateMarker)))),str(GlobalVariables.DB.get_user_kcal_limit(GlobalVariables.DB.get_active_user()[0])[0]-int(GlobalVariables.DB.kcal_from_day(str(dateMarker))))), self.weekSummaryList)
+            item.setTextAlignment(QtCore.Qt.AlignHCenter)
+            item.setSizeHint(QtCore.QSize(480, 35))
 
     def show(self):
         self.workingSpace.setVisible(True)
