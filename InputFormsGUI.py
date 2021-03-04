@@ -134,9 +134,10 @@ class FromLargeInputBox(FormInputBox):
         return self.formLineEdit.toPlainText()
 
 class FormComboBox(FormInputBox):
-    def __init__(self, xpos, ypos, width, height, text, where, options):
+    def __init__(self, xpos, ypos, width, height, text, where, options,bar_width=80):
         super(FormComboBox,self).__init__(xpos, ypos, width, height, text, where)
         self.optionList = options
+        self.barWidth=bar_width
 
 
         FormInputBox.create_element(self)
@@ -151,7 +152,7 @@ class FormComboBox(FormInputBox):
 
         self.optionsFrame = QFrame(self.startFrame)
         self.formFrame.mousePressEvent=self.hide_combo_box
-        self.optionsFrame.resize(self.width, len(self.optionList) * 80)
+        self.optionsFrame.resize(self.width, len(self.optionList) * self.barWidth)
         self.optionsFrame.move(self.x, self.y + self.height + 10)
         self.optionsFrame.show()
         self.optionsFrame.activateWindow()
@@ -164,10 +165,10 @@ class FormComboBox(FormInputBox):
         for type in self.optionList:
             tempButton=QPushButton(self.optionsFrame)
             tempButton.setText(type)
-            tempButton.resize(self.width,80)
+            tempButton.resize(self.width,self.barWidth)
             tempButton.setStyleSheet("QPushButton{color:black;font-size:24px;border-bottom:1px dotted black;border-radius:0px;} QPushButton:hover{background-color:#42afc2;}")
             tempButton.setFont(QFont(self.get_roboto_medium_font()))
-            tempButton.move(0,self.optionList.index(type)*80)
+            tempButton.move(0,self.optionList.index(type)*self.barWidth)
             tempButton.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             tempButton.clicked.connect(self.choice_pick)
             buttonlist.append(tempButton)
@@ -193,6 +194,7 @@ class FormComboBox(FormInputBox):
         choice=text.sender().text()
         self.formLineEdit.setText(choice)
         self.hide_combo_box(self.formLineEdit)
+
 
     def alpha_correct(self, inputWidget, image, image2):
         pass
@@ -244,6 +246,33 @@ class FormInputOptional(FormInputBox):
         FormInputBox.create_element(self)
 
 
+
+    def alpha_correct(self, inputWidget, image,numeric):
+        pass
+
+
+class FormInputWithSubmit(FormInputBox):
+    def __init__(self, xpos, ypos, width, height, text, where):
+        super().__init__(xpos, ypos, width, height, text, where)
+
+
+        self.create_element2()
+
+    def create_element2(self):
+        FormInputBox.create_element(self)
+        self.basic_icon_set("")
+        self.formCheckImage.setStyleSheet("QFrame{background-color:#42afc2;"
+                                          "border-top-left-radius:0%;"
+                                          "border-bottom-left-radius:0%;}"
+                                          "QFrame:hover{background-color:#117182;}")
+        self.formCheckSentIcon=QtWidgets.QLabel(self.formCheckImage)
+        self.formCheckSentIcon.setPixmap(QtGui.QPixmap("graphics/001-email.png").scaled(48, 48, QtCore.Qt.KeepAspectRatio,
+                                                                                     QtCore.Qt.SmoothTransformation))
+        self.formCheckSentIcon.setStyleSheet("background-color:none;")
+        self.formCheckSentIcon.move((self.height-48)/2,(self.height-48)/2)
+        self.formCheckImage.resize(self.height,self.height)
+        self.formLineEdit.resize(self.width-self.height-45,30)
+        self.formCheckImage.move(self.width-self.height,0)
 
     def alpha_correct(self, inputWidget, image,numeric):
         pass

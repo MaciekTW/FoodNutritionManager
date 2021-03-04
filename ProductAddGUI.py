@@ -18,9 +18,6 @@ class ProductAddGUI:
         self.robotoFontFamily.append(QtGui.QFontDatabase.applicationFontFamilies(
             QtGui.QFontDatabase.addApplicationFont("Fonts/Roboto-BoldCondensed.ttf")))
 
-        print(self.robotoFontFamily)
-
-
         self.workScreen = workspace
         self.mainScreen = QtWidgets.QFrame(self.workScreen)
         self.mainScreen.hide()
@@ -95,9 +92,10 @@ class ProductAddGUI:
         self.titleLab.setText("Use the form below to add new product")
 
         self.errorLab=QtWidgets.QLabel(self.rightWidgetMiddleFrame)
-        self.errorLab.move(12,86)
+        self.errorLab.move(12,82)
         self.errorLab.setFont(QtGui.QFont(self.robotoFontFamily[2][0]))
         self.errorLab.setMinimumWidth(640)
+        self.errorLab.setMinimumHeight(30)
 
         self.formFrame=QtWidgets.QFrame(self.rightWidgetMiddleFrame)
         self.formFrame.resize(660,730)
@@ -220,5 +218,5 @@ class ProductAddGUI:
         self.weightInput.clear()
         if error:
             self.errorLab.clear()
-            print("test")
+
 

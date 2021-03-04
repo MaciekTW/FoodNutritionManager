@@ -7,6 +7,7 @@ from MealAddGUI import MealAddGUI
 from RecordAddGUI import RecordAddGui
 from datetime import date,timedelta,datetime
 from BasicElementGUI import BasicElement
+from InputFormsGUI import FormComboBox,FormInputWithSubmit
 import re
 import random
 import GlobalVariables
@@ -397,23 +398,79 @@ class MainGUI(QWidget):
         self.weightGoalTab=QtWidgets.QFrame()
         self.weightCurrentTab = QtWidgets.QFrame()
         self.caloriesGoalTab = QtWidgets.QFrame()
+        self.userChangeTab = QtWidgets.QFrame()
+
+
 
 
         self.weightGoalTab.setStyleSheet("background-color:rgba(66,175,194,0.1);")
         self.weightCurrentTab.setStyleSheet("background-color:rgba(66,175,194,0.1);")
         self.caloriesGoalTab.setStyleSheet("background-color:rgba(66,175,194,0.1);")
-
+        self.userChangeTab.setStyleSheet("background-color:rgba(66,175,194,0.1);")
 
         self.tabWidget.addTab(self.weightGoalTab,"Weight goal")
-        self.tabWidget.addTab(self.caloriesGoalTab, "Kilocalories goal")
+        self.tabWidget.addTab(self.caloriesGoalTab, "Kcal limit")
         self.tabWidget.addTab(self.weightCurrentTab, "Current weight")
+        self.tabWidget.addTab(self.userChangeTab, "User choice")
+
+        self.avatarFrame=QtWidgets.QFrame(self.userChangeTab)
+        self.avatarFrame.resize(174,174)
+        self.avatarFrame.move(40,10)
+        self.avatarFrame.setStyleSheet("background-color:none;")
+        self.avatarLogo=QtWidgets.QLabel(self.avatarFrame)
+        self.avatarLogo.setPixmap(
+            QtGui.QPixmap("graphics/003-user-1.png").scaled(164, 164, QtCore.Qt.KeepAspectRatio,
+                                                             QtCore.Qt.SmoothTransformation))
+        self.avatarLogo.move(5,5)
+        self.avatarComboBox=FormComboBox(240,52,300,90,"User Choose",self.userChangeTab,["Maciek","Wacek"],40)
+
+
+
+        self.weightGoalcurrentFrame=QtWidgets.QFrame(self.weightGoalTab)
+        self.weightGoalcurrentFrame.resize(174, 174)
+        self.weightGoalcurrentFrame.move(40, 16)
+        self.weightGoalcurrentFrame.setStyleSheet("background-color:none;")
+
+        self.weightGoalcurrentNumber=QtWidgets.QLabel(self.weightGoalcurrentFrame)
+        self.weightGoalcurrentNumber.setText("65 KG")
+        self.weightGoalcurrentNumber.setMinimumWidth(174)
+        self.weightGoalcurrentNumber.setAlignment(QtCore.Qt.AlignHCenter)
+        self.weightGoalcurrentNumber.setStyleSheet("color:#fff;font-size:64px")
+        self.weightGoalcurrentNumber.setFont(fontWithSpacing)
+
+        self.weightGoalcurrentHR=QtWidgets.QLabel(self.weightGoalcurrentFrame)
+        self.weightGoalcurrentHR.resize(160,2)
+        self.weightGoalcurrentHR.setStyleSheet("background-color:#fff;border:2px solid #fff")
+        self.weightGoalcurrentHR.move(7,80)
+
+        self.weightGoalcurrentTitle=QtWidgets.QLabel(self.weightGoalcurrentFrame)
+        self.weightGoalcurrentTitle.setText("CURRENT")
+        self.weightGoalcurrentTitle.setMinimumWidth(174)
+        self.weightGoalcurrentTitle.setAlignment(QtCore.Qt.AlignHCenter)
+        self.weightGoalcurrentTitle.setStyleSheet("color:#fff;font-size:28px")
+        self.weightGoalcurrentTitle.setFont(fontRegular)
+        self.weightGoalcurrentTitle.move(0, 94)
+
+        self.weightGoalcurrentTitleLower=QtWidgets.QLabel(self.weightGoalcurrentFrame)
+        self.weightGoalcurrentTitleLower.setText("for Maciek")
+        self.weightGoalcurrentTitleLower.setMinimumWidth(174)
+        self.weightGoalcurrentTitleLower.setAlignment(QtCore.Qt.AlignHCenter)
+        self.weightGoalcurrentTitleLower.setStyleSheet("color:#fff;font-size:18px")
+        self.weightGoalcurrentTitleLower.setFont(fontRegular)
+        self.weightGoalcurrentTitleLower.move(0, 128)
+
+        self.newWeightInput=FormInputWithSubmit(240,52,300,90,"New goal",self.weightGoalTab)
 
         self.tabWidget.setStyleSheet("QTabBar::tab {"
-                                     "padding:20px;"
+                                     "width:117px;"
+                                     "height:22px;"
+                                     "padding:16px;"
                                      "color:#fff;"
-                                     "font-size:16px;"
+                                     "font-size:18px;"
                                      "border-right:1px solid #fff;"
                                      "background-color:#117182;}"
+                                     "QTabBar::tab:last {"
+                                     "border-right:none;}"
                                      "QTabWidget{"
                                      "background-color:red;"
                                      "border:none;"
@@ -421,7 +478,7 @@ class MainGUI(QWidget):
                                      "QTabBar::tab:selected {"
                                      "background-color:rgba(66,175,194,0.1);"
                                      "font-weight:700;"
-                                     "font-size:18px;}"
+                                     "font-size:20px;}"
                                      "QTabWidget::pane {"
                                      "border:none;}")
         self.tabWidget.setFont(fontRegular)
@@ -820,6 +877,8 @@ class MainGUI(QWidget):
     def home_screen_button(self,screenList):
         self.hide_all_screens(screenList)
         self.table_update(GlobalVariables.DB.today())
+        self.day_progress_bar()
+        self.week_progress_bar()
         self.workingSpace.show()
         temp = self.homeButton.styleSheet()
         self.panel_marker_off()
@@ -910,14 +969,19 @@ class MainGUI(QWidget):
         for i in range(7):
             dateMarker=date.today()-timedelta(days=i)
             kcalDay=int(GlobalVariables.DB.kcal_from_day(str(dateMarker)))
-            if len(str(kcalDay)) == 2:
+            if len(str(kcalDay)) == 4:
+                spaces=""
+            elif len(str(kcalDay)) == 3:
                 spaces="  "
+            elif len(str(kcalDay)) == 2:
+                spaces="   "
             elif len(str(kcalDay)) == 1:
-                spaces="    "
+                spaces = "    "
             else:
-                spaces=" "
+                spaces="  "
 
-            item = QtWidgets.QListWidgetItem("Day: {}\tEaten: {}{}Kcal\tLeft: {} Kcal".format(
+            print("{}   len: {} spaces len: {}".format(str(kcalDay),len(str(kcalDay)),len(spaces)))
+            item = QtWidgets.QListWidgetItem("Day: {}     Eaten: {}{} Kcal   Left: {} Kcal".format(
                 str(dateMarker.strftime("%d.%m.%Y")),
                 str(kcalDay),
                 spaces,

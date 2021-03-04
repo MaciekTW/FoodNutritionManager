@@ -90,6 +90,13 @@ class MealAddGUI:
         self.titleLab.setFont(QtGui.QFont(self.robotoFontFamily[1][0]))
         self.titleLab.setText("Use the form below to add new recipe")
 
+        self.errorLab=QtWidgets.QLabel(self.rightWidgetMiddleFrame)
+        self.errorLab.move(12,82)
+        self.errorLab.setFont(QtGui.QFont(self.robotoFontFamily[2][0]))
+        self.errorLab.setMinimumHeight(30)
+        self.errorLab.setMinimumWidth(640)
+
+
         self.formFrame = QtWidgets.QFrame(self.rightWidgetMiddleFrame)
         self.formFrame.resize(660, 730)
         self.formFrame.move(0, 120)
@@ -146,6 +153,7 @@ class MealAddGUI:
         self.addButton.setGraphicsEffect(self.shadow_make())
 
         self.addButton.clicked.connect(lambda: self.next_ingredient(ingredients))
+        self.clsButton.clicked.connect(self.clear)
 
     def show(self):
         self.mainScreen.setVisible(True)
@@ -162,6 +170,23 @@ class MealAddGUI:
         return shadowObj
 
     def next_ingredient(self,list):
+        self.errorLab.setStyleSheet("font-size:16px;color:red;")
+        if not self.mealNameInput.isCorect:
+            self.errorLab.setText("Failure: Wrong meal name")
+            return
+        if not self.ingredientInput.isCorect or GlobalVariables.DB.DB_product_find(self.ingredientInput.get_text()) == -1:
+            self.errorLab.setText("Failure: Wrong product")
+            return
+        if not self.weightInput.isCorect:
+            self.errorLab.setText("Failure: Wrong product weight")
+            return
+        if GlobalVariables.DB.DB_type_find(self.typeInput.get_text())==-1:
+            self.errorLab.setText("Failure: Wrong meal type")
+            return
+
+        self.errorLab.setStyleSheet("font-size:16px;color:yellow;")
+        self.errorLab.setText("Ingredient added correctly. Add another one or finish the recipe.")
+
         list.append({'nameID':GlobalVariables.DB.DB_product_find(self.ingredientInput.get_text()),'weight':int(self.weightInput.get_text())})
         self.mealNameInput.set_enable(False)
         self.typeInput.set_enable(False)
@@ -169,9 +194,35 @@ class MealAddGUI:
         self.weightInput.clear()
 
     def recipe_add(self,list):
-        GlobalVariables.DB.add_record(list,self.typeInput.get_text(),self.mealNameInput.get_text(),self.descInput.get_text())
+        self.errorLab.setStyleSheet("font-size:16px;color:red;")
+
+        if self.descInput.get_text() =="":
+            desc=" "
+        else:
+            desc=self.descInput.get_text()
+
+        if self.ingredientInput.isCorect and GlobalVariables.DB.DB_product_find(self.ingredientInput.get_text()) != -1:
+            if self.weightInput.isCorect:
+                list.append({'nameID': GlobalVariables.DB.DB_product_find(self.ingredientInput.get_text()),
+                     'weight': int(self.weightInput.get_text())})
+            else:
+                pass
+
+        if len(list) == 0:
+            self.errorLab.setText("Failure: no ingredients added!")
+            return
+
+        GlobalVariables.DB.add_record(list,self.typeInput.get_text(),self.mealNameInput.get_text(),desc)
 
         GlobalVariables.DB.Set_record_ID()
+        self.errorLab.setStyleSheet("font-size:16px;color:green;")
+        self.errorLab.setText("Recipe added")
+        self.clear()
+        self.mealNameInput.set_enable(True)
+        self.typeInput.set_enable(True)
+
+
+    def clear(self):
         self.ingredientInput.clear()
         self.weightInput.clear()
         self.mealNameInput.clear()

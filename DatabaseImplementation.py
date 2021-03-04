@@ -461,10 +461,10 @@ class DBoperation:
 # db.DB_outside_query("SELECT * FROM Type")
 # print(db.get_products_names())
 
-# options = ["Breakfast", "Dinner", "Supper", "Snack", " Desert"]
+options = ["Breakfast", "Dinner", "Supper", "Snack", " Desert"]
 obj = DBoperation("tw.db")
 print(obj.kcal_from_day("obj.today()"))
-obj.DB_outside_query("SELECT * FROM Weight")
+obj.DB_outside_query("SELECT * FROM Product")
 # # obj.DB_outside_query("SELECT * FROM Meal")
 # # obj.DB_outside_query("SELECT * FROM Type")
 # obj.DB_outside_query("SELECT * FROM Product_Meal")
@@ -472,8 +472,6 @@ obj.DB_outside_query("SELECT * FROM Weight")
 #
 # print(obj.day_meals_print(obj.today()))
 # print(obj.meal_kcal_from_record(1,1))
-# for i in options:
-#     obj.DB_type_insert(i)
 
 
 # obj.DB_outside_query("SELECT * FROM products")
