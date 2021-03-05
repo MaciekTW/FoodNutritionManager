@@ -68,16 +68,44 @@ class DBoperation:
         try:
             self.c = self.db.cursor()
             self.c.execute(
-                "CREATE TABLE Product(productID INT,productName TEXT, kcal REAL, carbo REAL, sugar REAL, protein REAL, fat REAL, packagePrice REAL, packageWeight REAL,desc TEXT)")
-            self.c.execute("CREATE TABLE Meal(mealID INT,mealName TEXT, typeID INT,recipe TEXT)")
-            self.c.execute("CREATE TABLE Type(typeID INT, typeName TEXT)")
-            self.c.execute("CREATE TABLE Product_Meal(mealID INT, productID INT)")
-            self.c.execute("CREATE TABLE Record(recordID INT,mealID INT, productID INT,productWeight INT)")
-            self.c.execute("CREATE TABLE DailyRecord(dailyID INT,recordID INT, userID INT, date TEXT)")
+                """CREATE TABLE Product(productID INT,
+                                        productName TEXT, 
+                                        kcal REAL, 
+                                        carbo REAL,
+                                        sugar REAL, 
+                                        protein REAL, 
+                                        fat REAL, 
+                                        packagePrice REAL, 
+                                        packageWeight REAL,
+                                        desc TEXT)""")
+            self.c.execute("""CREATE TABLE Meal(mealID INT,
+                                                mealName TEXT, 
+                                                typeID INT,
+                                                recipe TEXT)""")
+            self.c.execute("""CREATE TABLE Type(typeID INT, 
+                                                typeName TEXT)""")
+            self.c.execute("""CREATE TABLE Product_Meal(mealID INT,
+                                                        productID INT)""")
+            self.c.execute("""CREATE TABLE Record(recordID INT,
+                                                  mealID INT,
+                                                  productID INT,
+                                                  productWeight INT)""")
+            self.c.execute("""CREATE TABLE DailyRecord(dailyID INT,
+                                                       recordID INT, 
+                                                       userID INT, 
+                                                       date TEXT)""")
             self.c.execute(
-                "CREATE TABLE User(userID INT,userName TEXT,userHeight INT, userWeightID INT, userWeightGoal REAL, userKcalLimit INT)")
+                """CREATE TABLE User(userID INT,
+                                     userName TEXT,
+                                     userHeight INT, 
+                                     userWeightID INT, 
+                                     userWeightGoal REAL,
+                                     userKcalLimit INT)""")
             self.c.execute(
-                "CREATE TABLE Weight(userWeightID INT,userID INT,weight REAL, data TEXT)")
+                """CREATE TABLE Weight(userWeightID INT,
+                                       userID INT,
+                                       weight REAL, 
+                                       data TEXT)""")
             self.c.close()
             self.db.commit()
 
@@ -304,7 +332,11 @@ class DBoperation:
     def get_meal_kcal(self, mealID):
         self.c = self.db.cursor()
         self.c.execute(
-            "SELECT SUM(kcal*(CAST(productWeight AS REAL)/100)) FROM Record LEFT JOIN Product ON Product.productID=Record.productID WHERE mealID=? GROUP BY(recordID) ORDER BY recordID,Product.productID DESC",
+            """ SELECT SUM(kcal*(CAST(productWeight AS REAL)/100)) FROM Record 
+                LEFT JOIN Product ON Product.productID=Record.productID 
+                WHERE mealID=? 
+                GROUP BY(recordID) 
+                ORDER BY recordID,Product.productID DESC""",
             (mealID,))
         temp = self.c.fetchone()
         self.c.close()
@@ -314,7 +346,10 @@ class DBoperation:
         recordID = self.DB_record_find(mealID)
         self.c = self.db.cursor()
         self.c.execute(
-            "SELECT productName,productWeight FROM Record LEFT JOIN Product ON Product.productID=Record.productID WHERE mealID=? AND recordID=? ORDER BY recordID DESC",
+            """ SELECT productName,productWeight FROM Record 
+                LEFT JOIN Product ON Product.productID=Record.productID 
+                WHERE mealID=? AND recordID=? 
+                ORDER BY recordID DESC""",
             (mealID, recordID))
         temp = self.c.fetchall()
         self.c.close()

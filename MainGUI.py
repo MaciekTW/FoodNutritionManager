@@ -426,40 +426,115 @@ class MainGUI(QWidget):
 
 
 
-        self.weightGoalcurrentFrame=QtWidgets.QFrame(self.weightGoalTab)
-        self.weightGoalcurrentFrame.resize(174, 174)
-        self.weightGoalcurrentFrame.move(40, 16)
-        self.weightGoalcurrentFrame.setStyleSheet("background-color:none;")
+        self.weightGoalFrame=QtWidgets.QFrame(self.weightGoalTab)
+        self.weightGoalFrame.resize(174, 174)
+        self.weightGoalFrame.move(40, 16)
+        self.weightGoalFrame.setStyleSheet("background-color:none;")
 
-        self.weightGoalcurrentNumber=QtWidgets.QLabel(self.weightGoalcurrentFrame)
-        self.weightGoalcurrentNumber.setText("65 KG")
-        self.weightGoalcurrentNumber.setMinimumWidth(174)
-        self.weightGoalcurrentNumber.setAlignment(QtCore.Qt.AlignHCenter)
-        self.weightGoalcurrentNumber.setStyleSheet("color:#fff;font-size:64px")
-        self.weightGoalcurrentNumber.setFont(fontWithSpacing)
+        self.weightGoalNumber=QtWidgets.QLabel(self.weightGoalFrame)
+        self.weightGoalNumber.setText("65 KG")
+        self.weightGoalNumber.setMinimumWidth(174)
+        self.weightGoalNumber.setAlignment(QtCore.Qt.AlignHCenter)
+        self.weightGoalNumber.setStyleSheet("color:#fff;font-size:64px")
+        self.weightGoalNumber.setFont(fontWithSpacing)
 
-        self.weightGoalcurrentHR=QtWidgets.QLabel(self.weightGoalcurrentFrame)
-        self.weightGoalcurrentHR.resize(160,2)
-        self.weightGoalcurrentHR.setStyleSheet("background-color:#fff;border:2px solid #fff")
-        self.weightGoalcurrentHR.move(7,80)
+        self.weightGoalHR=QtWidgets.QLabel(self.weightGoalFrame)
+        self.weightGoalHR.resize(160, 2)
+        self.weightGoalHR.setStyleSheet("background-color:#fff;border:2px solid #fff")
+        self.weightGoalHR.move(7, 80)
 
-        self.weightGoalcurrentTitle=QtWidgets.QLabel(self.weightGoalcurrentFrame)
-        self.weightGoalcurrentTitle.setText("CURRENT")
-        self.weightGoalcurrentTitle.setMinimumWidth(174)
-        self.weightGoalcurrentTitle.setAlignment(QtCore.Qt.AlignHCenter)
-        self.weightGoalcurrentTitle.setStyleSheet("color:#fff;font-size:28px")
-        self.weightGoalcurrentTitle.setFont(fontRegular)
-        self.weightGoalcurrentTitle.move(0, 94)
+        self.weightGoalTitle=QtWidgets.QLabel(self.weightGoalFrame)
+        self.weightGoalTitle.setText("TARGET")
+        self.weightGoalTitle.setMinimumWidth(174)
+        self.weightGoalTitle.setAlignment(QtCore.Qt.AlignHCenter)
+        self.weightGoalTitle.setStyleSheet("color:#fff;font-size:28px")
+        self.weightGoalTitle.setFont(fontRegular)
+        self.weightGoalTitle.move(0, 90)
 
-        self.weightGoalcurrentTitleLower=QtWidgets.QLabel(self.weightGoalcurrentFrame)
-        self.weightGoalcurrentTitleLower.setText("for Maciek")
-        self.weightGoalcurrentTitleLower.setMinimumWidth(174)
-        self.weightGoalcurrentTitleLower.setAlignment(QtCore.Qt.AlignHCenter)
-        self.weightGoalcurrentTitleLower.setStyleSheet("color:#fff;font-size:18px")
-        self.weightGoalcurrentTitleLower.setFont(fontRegular)
-        self.weightGoalcurrentTitleLower.move(0, 128)
+        self.weightGoalTitleLower=QtWidgets.QLabel(self.weightGoalFrame)
+        self.weightGoalTitleLower.setText("for Maciek")
+        self.weightGoalTitleLower.setMinimumWidth(174)
+        self.weightGoalTitleLower.setAlignment(QtCore.Qt.AlignHCenter)
+        self.weightGoalTitleLower.setStyleSheet("color:#fff;font-size:18px")
+        self.weightGoalTitleLower.setFont(fontRegular)
+        self.weightGoalTitleLower.move(0, 126)
 
-        self.newWeightInput=FormInputWithSubmit(240,52,300,90,"New goal",self.weightGoalTab)
+        self.newGoalInput=FormInputWithSubmit(240, 52, 300, 90, "New goal", self.weightGoalTab)
+
+
+        self.kcalGoalFrame = QtWidgets.QFrame(self.weightCurrentTab)
+        self.kcalGoalFrame.resize(174, 174)
+        self.kcalGoalFrame.move(40, 16)
+        self.kcalGoalFrame.setStyleSheet("background-color:none;")
+
+        self.kcalGoalNumber = QtWidgets.QLabel(self.kcalGoalFrame)
+        self.kcalGoalNumber.setText("72 KG")
+        self.kcalGoalNumber.setMinimumWidth(174)
+        self.kcalGoalNumber.setAlignment(QtCore.Qt.AlignHCenter)
+        self.kcalGoalNumber.setStyleSheet("color:#fff;font-size:64px")
+        self.kcalGoalNumber.setFont(fontWithSpacing)
+
+        self.kcalGoalHR = QtWidgets.QLabel(self.kcalGoalFrame)
+        self.kcalGoalHR.resize(160, 2)
+        self.kcalGoalHR.setStyleSheet("background-color:#fff;border:2px solid #fff")
+        self.kcalGoalHR.move(7, 80)
+
+        self.kcalGoalTitle = QtWidgets.QLabel(self.kcalGoalFrame)
+        self.kcalGoalTitle.setText("CURRENT")
+        self.kcalGoalTitle.setMinimumWidth(174)
+        self.kcalGoalTitle.setAlignment(QtCore.Qt.AlignHCenter)
+        self.kcalGoalTitle.setStyleSheet("color:#fff;font-size:28px")
+        self.kcalGoalTitle.setFont(fontRegular)
+        self.kcalGoalTitle.move(0, 90)
+
+        self.kcalGoalTitleLower = QtWidgets.QLabel(self.kcalGoalFrame)
+        self.kcalGoalTitleLower.setText("for Maciek")
+        self.kcalGoalTitleLower.setMinimumWidth(174)
+        self.kcalGoalTitleLower.setAlignment(QtCore.Qt.AlignHCenter)
+        self.kcalGoalTitleLower.setStyleSheet("color:#fff;font-size:18px")
+        self.kcalGoalTitleLower.setFont(fontRegular)
+        self.kcalGoalTitleLower.move(0, 126)
+
+        self.newWeightInput = FormInputWithSubmit(240, 52, 300, 90, "Weight update", self.weightCurrentTab)
+
+
+
+
+        self.kcalGoalFrame = QtWidgets.QFrame(self.caloriesGoalTab)
+        self.kcalGoalFrame.resize(174, 174)
+        self.kcalGoalFrame.move(40, 16)
+        self.kcalGoalFrame.setStyleSheet("background-color:none;")
+
+        self.kcalGoalNumber = QtWidgets.QLabel(self.kcalGoalFrame)
+        self.kcalGoalNumber.setText("1800")
+        self.kcalGoalNumber.setMinimumWidth(174)
+        self.kcalGoalNumber.setAlignment(QtCore.Qt.AlignHCenter)
+        self.kcalGoalNumber.setStyleSheet("color:#fff;font-size:64px")
+        self.kcalGoalNumber.setFont(fontWithSpacing)
+
+        self.kcalGoalHR = QtWidgets.QLabel(self.kcalGoalFrame)
+        self.kcalGoalHR.resize(160, 2)
+        self.kcalGoalHR.setStyleSheet("background-color:#fff;border:2px solid #fff")
+        self.kcalGoalHR.move(7, 80)
+
+        self.kcalGoalTitle = QtWidgets.QLabel(self.kcalGoalFrame)
+        self.kcalGoalTitle.setText("CURRENT")
+        self.kcalGoalTitle.setMinimumWidth(174)
+        self.kcalGoalTitle.setAlignment(QtCore.Qt.AlignHCenter)
+        self.kcalGoalTitle.setStyleSheet("color:#fff;font-size:28px")
+        self.kcalGoalTitle.setFont(fontRegular)
+        self.kcalGoalTitle.move(0, 90)
+
+        self.kcalGoalTitleLower = QtWidgets.QLabel(self.kcalGoalFrame)
+        self.kcalGoalTitleLower.setText("for Maciek")
+        self.kcalGoalTitleLower.setMinimumWidth(174)
+        self.kcalGoalTitleLower.setAlignment(QtCore.Qt.AlignHCenter)
+        self.kcalGoalTitleLower.setStyleSheet("color:#fff;font-size:18px")
+        self.kcalGoalTitleLower.setFont(fontRegular)
+        self.kcalGoalTitleLower.move(0, 126)
+
+        self.newKcalGoalInput = FormInputWithSubmit(240, 52, 300, 90, "Kcal update", self.caloriesGoalTab)
+
 
         self.tabWidget.setStyleSheet("QTabBar::tab {"
                                      "width:117px;"
@@ -965,6 +1040,15 @@ class MainGUI(QWidget):
             item=QtWidgets.QTableWidgetItem(str(round(GlobalVariables.DB.meal_fat_from_record(meal[1], meal[0])[0][0],2)))
             self.todayTable.setItem(GlobalVariables.DB.day_meals_print(day).index(meal)+1,5, item)
 
+    def table_clear(self):
+        for i in range(7):
+            for j in range(7):
+                item=QtWidgets.QTableWidgetItem("")
+                self.todayTable.setItem(i+1,j, item)
+
+
+
+
     def week_summary(self):
         for i in range(7):
             dateMarker=date.today()-timedelta(days=i)
@@ -995,6 +1079,11 @@ class MainGUI(QWidget):
     def list_item_clicked(self,item):
         itemDate = re.findall('[0-9]+.[0-9]+.[0-9]+', item.text())
         dayInRightFormat=datetime.strptime(itemDate[0],"%d.%m.%Y")
+
+        if len(GlobalVariables.DB.day_meals_print(dayInRightFormat.strftime("%Y-%m-%d"))) == 0:
+            return
+
+        self.table_clear()
         self.table_update(dayInRightFormat.strftime("%Y-%m-%d"))
         self.dayLabel.setText(itemDate[0])
 
